@@ -1,6 +1,10 @@
 # sample-oh-my-aidlcops
 
-**AIDLC × AgenticOps** — AI 기반 개발 라이프사이클(AIDLC)을 에이전트 기반 운영 자동화로 완성하는 플러그인 마켓플레이스입니다.
+**AIDLC를 신뢰할 수 있게 만듭니다.** OMA는 [AIDLC 방법론](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)의
+두 신뢰성 축 — **온톨로지 엔지니어링**(정확성)과 **하네스 엔지니어링**(안전성) — 을
+설치 가능한 플러그인으로 제공하는 Claude Code · Kiro 플러그인 마켓플레이스입니다.
+**AIDLC Workflows**가 프로세스 척추 역할을 하고, **AgenticOps**가 운영 신호를
+온톨로지로 되돌리는 피드백 루프를 닫습니다.
 
 [English README](./README.md) · [문서](./docs/) · [플러그인](./plugins/) · [Steering](./steering/) · [릴리스](https://aws-samples.github.io/sample-oh-my-aidlcops/releases) · [References](./REFERENCES.md)
 
@@ -40,9 +44,35 @@
 
 ## OMA 란
 
-`oh-my-aidlcops`(OMA)는 [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)(OMC)의 형제 프로젝트입니다. OMC가 범용 Claude Code 워크플로우를 오케스트레이션한다면, OMA는 **AIDLC 루프**(Inception → Construction → Operations)에 특화됩니다.
+`oh-my-aidlcops`(OMA)는 [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)(OMC)의 형제 프로젝트입니다. OMC가 범용 Claude Code 워크플로우를 오케스트레이션한다면, OMA는 **AIDLC 루프**(Inception → Construction → Operations)를 *에이전트로 돌릴 수 있을 만큼 신뢰성 있게* 만드는 데 특화됩니다.
 
-핵심 명제: AIDLC는 운영까지 에이전트 자동화되었을 때 비로소 완성됩니다. OMA는 AWS 공식 [AIDLC workflows](https://github.com/awslabs/aidlc-workflows)에 **AgenticOps** 레이어(자기개선 피드백 루프, 자율 배포, 지속 평가, 인시던트 대응, 비용 거버넌스)를 결합하여 라이프사이클이 사람 개입 없이 스스로 닫히도록 구성합니다.
+### 문제: 에이전틱 AIDLC는 역량이 아니라 신뢰성에서 무너진다
+
+[AIDLC 방법론](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)은
+AI 주도 개발이 반복적으로 실패하는 세 가지 패턴을 지목하며, 어느 것도 모델 품질의
+문제가 아닙니다.
+
+- **할루시네이션·드리프트** — 개념이 프롬프트·세션마다 다른 의미를 갖기 때문에, 핸드오프는 사람이 재해석할 때만 성립합니다.
+- **런어웨이 실행** — 아키텍처적 제약이 없으면 에이전트 루프가 수백 번 재시도를 발사합니다(방법론의 핀테크 사례: 847회 재시도, 약 $2,200, 3시간 장애).
+- **셀프 채점** — 코드를 작성한 에이전트가 테스트도 작성하므로 자신의 사각지대가 검증을 통과합니다.
+
+방법론은 이를 **신뢰성 2축**으로 답합니다. *온톨로지 엔지니어링*이 에이전트 산출물의
+**정확성**(WHAT/WHEN)을 보장하고, *하네스 엔지니어링*이 실행 방식의 **안전성**(HOW)을
+강제합니다. OMA는 이 2축을 AWS 위에서 설치 가능하게 구현한 것입니다.
+
+### OMA가 설치하는 세 기둥
+
+| 방법론 축 | 보장 | OMA 구현 | 진입점 |
+|---|---|---|---|
+| **온톨로지 엔지니어링** | 정확성 (WHAT · WHEN) | `schemas/ontology/` 8개 JSON-Schema 엔티티, `oma validate`, 스키마 진화 규칙 | `/oma:inception`, `oma validate` |
+| **하네스 엔지니어링** | 안전성 (HOW) | 하네스 DSL v2 (`policies`/OPA, `telemetry`), `oma compile --strict-enterprise`, MCP 버전 pin, 샌드박싱된 budget 평가 | `oma doctor --enterprise`, `oma compile` |
+| **AgenticOps (Outer Loop)** | 살아있는 온톨로지 | `self-improving-loop`, `continuous-eval`, `incident-response`가 운영 신호를 온톨로지로 환류 | `/oma:agenticops`, `/oma:self-improving` |
+
+**AIDLC Workflows** — AWS 공식 [awslabs/aidlc-workflows](https://github.com/awslabs/aidlc-workflows)
+3단계 루프 — 는 이 기둥들이 걸리는 *프로세스 척추*입니다. OMA는 여기에 `*.opt-in.md`
+확장만 기여하며 core를 fork하지 않습니다. 그 결과 AIDLC는 "설계·구축 후 기대"가
+아니라, 모든 산출물이 검증된 온톨로지 문서이고 모든 에이전트 행동이 하네스 안에서
+실행되는 라이프사이클이 됩니다.
 
 ## 대상 사용자
 
