@@ -43,15 +43,17 @@ Through the `agenticops` plugin, OMA injects five skills into the operations pha
 
 ```mermaid
 flowchart LR
-    I[Inception<br/>spec·stories] --> C[Construction<br/>design·code·tests]
-    C --> O[Operations<br/>deploy·monitor]
-    O -->|traces·metrics·incidents| SI[self-improving-loop]
-    SI -->|skill·prompt improvement PR| C
-    SI -->|requirement reflection proposal| I
-    O -->|cost·compliance signals| CG[cost-governance]
-    CG -->|budget guard| O
-    O -->|regression detection| CE[continuous-eval]
-    CE -->|quality gate| C
+    BF["Brownfield workload"] -. "modernization 6R" .-> I
+    I["Inception · aidlc · spec/stories"] --> C["Construction · aidlc · design/code/tests"]
+    C --> O["Operations · agenticops · deploy/monitor"]
+    O -- "traces/metrics/incidents" --> SI["self-improving-loop"]
+    SI -- "skill/prompt improvement PR" --> C
+    SI -- "requirement reflection proposal" --> I
+    O -- "cost/compliance signals" --> CG["cost-governance"]
+    CG -- "budget guard" --> O
+    O -- "regression detection" --> CE["continuous-eval"]
+    CE -- "quality gate" --> C
+    RT["ai-infra · runtime base"] -. "EKS / vLLM / Langfuse" .-> O
 ```
 
 The core of this loop is the **automated Operations → Construction reverse flow**. In traditional AIDLC implementations, this arrow depended on human issue classification and backlog management. In OMA, `self-improving-loop` analyzes trace patterns and generates concrete skill and prompt fix PRs.

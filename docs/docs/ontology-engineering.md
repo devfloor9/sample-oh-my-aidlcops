@@ -80,11 +80,11 @@ into the ontology, which the methodology summarizes as **"AIOps → AIDLC."**
 
 ```mermaid
 flowchart LR
-    O[Operations<br/>traces · metrics · incidents] -->|signal| SIL[self-improving-loop]
-    SIL -->|Inner: add constraint| QG[quality-gates]
-    SIL -->|Middle: schema update PR| ONT[schemas/ontology/*]
-    SIL -->|Outer: domain redesign| ADR[ADR + Spec]
-    ONT --> C[Construction<br/>code-gen bound by schema]
+    O["Operations · traces / metrics / incidents"] -- "signal" --> SIL["self-improving-loop"]
+    SIL -- "Inner: add constraint" --> QG["quality-gates"]
+    SIL -- "Middle: schema update PR" --> ONT["schemas/ontology"]
+    SIL -- "Outer: domain redesign" --> ADR["ADR + Spec"]
+    ONT --> C["Construction · code-gen bound by schema"]
     C --> O
 ```
 

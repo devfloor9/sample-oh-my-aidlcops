@@ -57,17 +57,17 @@ OMA는 `agenticops` 플러그인을 통해 운영 단계에 다음 여섯 스킬
 
 ```mermaid
 flowchart LR
-    BF[Brownfield<br/>workload] -.->|modernization<br/>(6R)| I
-    I[Inception<br/>aidlc · spec·stories] --> C[Construction<br/>aidlc · design·code·tests]
-    C --> O[Operations<br/>agenticops · deploy·monitor]
-    O -->|트레이스·메트릭·인시던트| SI[self-improving-loop]
-    SI -->|스킬·프롬프트 개선 PR| C
-    SI -->|요구사항 반영 제안| I
-    O -->|비용·규정 신호| CG[cost-governance]
-    CG -->|예산 가드| O
-    O -->|회귀 탐지| CE[continuous-eval]
-    CE -->|품질 게이트| C
-    RT[ai-infra<br/>런타임 기반] -.->|EKS · vLLM · Langfuse| O
+    BF["Brownfield workload"] -. "modernization 6R" .-> I
+    I["Inception · aidlc · spec/stories"] --> C["Construction · aidlc · design/code/tests"]
+    C --> O["Operations · agenticops · deploy/monitor"]
+    O -- "트레이스/메트릭/인시던트" --> SI["self-improving-loop"]
+    SI -- "스킬/프롬프트 개선 PR" --> C
+    SI -- "요구사항 반영 제안" --> I
+    O -- "비용/규정 신호" --> CG["cost-governance"]
+    CG -- "예산 가드" --> O
+    O -- "회귀 탐지" --> CE["continuous-eval"]
+    CE -- "품질 게이트" --> C
+    RT["ai-infra · 런타임 기반"] -. "EKS / vLLM / Langfuse" .-> O
 ```
 
 이 루프의 핵심은 **Operations → Construction 역방향 흐름**이 자동화된다는 점입니다. 기존 AIDLC 구현에서는 이 화살표가 인간의 이슈 분류와 백로그 관리에 의존했지만, OMA에서는 `self-improving-loop`가 트레이스 패턴을 분석해 구체적인 스킬·프롬프트 수정 PR을 생성합니다.
