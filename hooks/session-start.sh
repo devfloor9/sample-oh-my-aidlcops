@@ -13,11 +13,17 @@ if [[ "${OMA_DISABLE_TRIGGERS:-0}" == "1" ]]; then
   exit 0
 fi
 
+# Resolve the project directory. Claude Code passes CLAUDE_PROJECT_DIR to
+# hooks (the cwd at `claude` startup). For other harnesses or local
+# invocations, fall back to $PWD. Every .omao/ path below MUST go through
+# this so the hook works no matter what cwd Claude spawns it with.
+OMA_PROJ_DIR="${CLAUDE_PROJECT_DIR:-${OMA_PROJECT_DIR:-$PWD}}"
+
 ADDITIONAL_CONTEXT=""
 
 # Check for active Tier-0 mode
-if [[ -f ".omao/state/active-mode" ]]; then
-  ACTIVE_MODE=$(cat ".omao/state/active-mode" 2>/dev/null || echo "")
+if [[ -f "$OMA_PROJ_DIR/.omao/state/active-mode" ]]; then
+  ACTIVE_MODE=$(cat "$OMA_PROJ_DIR/.omao/state/active-mode" 2>/dev/null || echo "")
   if [[ -n "$ACTIVE_MODE" ]]; then
     ADDITIONAL_CONTEXT+="[OMA Session Context]
 
@@ -30,8 +36,8 @@ This mode is currently running. Use /oma:cancel to terminate if needed.
 fi
 
 # Load project memory if exists
-if [[ -f ".omao/project-memory.json" ]]; then
-  PROJECT_MEMORY=$(cat ".omao/project-memory.json" 2>/dev/null || echo "")
+if [[ -f "$OMA_PROJ_DIR/.omao/project-memory.json" ]]; then
+  PROJECT_MEMORY=$(cat "$OMA_PROJ_DIR/.omao/project-memory.json" 2>/dev/null || echo "")
   if [[ -n "$PROJECT_MEMORY" ]]; then
     ADDITIONAL_CONTEXT+="Project Memory:
 $PROJECT_MEMORY
@@ -45,7 +51,7 @@ fi
 # starts with awareness of active budgets, open incidents, and pending
 # deployments. Kill switch: OMA_DISABLE_ONTOLOGY=1.
 if [[ "${OMA_DISABLE_ONTOLOGY:-0}" != "1" ]] && command -v jq >/dev/null 2>&1; then
-  ONTOLOGY_DIR=".omao/ontology"
+  ONTOLOGY_DIR="$OMA_PROJ_DIR/.omao/ontology"
   if [[ -d "$ONTOLOGY_DIR" ]]; then
     ONTOLOGY_BLOCK=""
 
@@ -98,25 +104,44 @@ Keyword triggers are active. Type keywords like 'autopilot', 'agenticops', 'ince
 
 # Emit JSON output.
 #
+# Claude Code 2.x expects:
+#   { "hookSpecificOutput": { "hookEventName": "SessionStart",
+#                              "additionalContext": "..." } }
+# A bare {additionalContext: "..."} is NOT honored by 2.x — the context
+# silently drops out, and the user sees no effect from the hook.
+#
 # CRITICAL: ADDITIONAL_CONTEXT is built from files on disk
 # (.omao/state/active-mode, .omao/project-memory.json) that may contain double
-# quotes, backslashes, newlines, or control characters. Naive
-# `echo "{\"additionalContext\": \"$VAR\"}"` would break the emitted JSON and,
-# worse, let a crafted state file inject arbitrary keys into the session
-# context. We REQUIRE a real JSON encoder: jq is preferred, Python 3 is an
-# acceptable fallback. We never fall back to shell-string interpolation.
+# quotes, backslashes, newlines, or control characters. Naive shell-string
+# interpolation would break the emitted JSON and let a crafted state file
+# inject arbitrary keys. We REQUIRE a real JSON encoder.
 if command -v jq >/dev/null 2>&1; then
-  jq -n --arg ctx "$ADDITIONAL_CONTEXT" '{"additionalContext": $ctx}'
+  jq -n --arg ctx "$ADDITIONAL_CONTEXT" '{
+    hookSpecificOutput: {
+      hookEventName: "SessionStart",
+      additionalContext: $ctx
+    }
+  }'
 elif command -v python3 >/dev/null 2>&1; then
   ADDITIONAL_CONTEXT="$ADDITIONAL_CONTEXT" python3 -c '
 import json, os, sys
-sys.stdout.write(json.dumps({"additionalContext": os.environ["ADDITIONAL_CONTEXT"]}))
+sys.stdout.write(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "SessionStart",
+        "additionalContext": os.environ["ADDITIONAL_CONTEXT"]
+    }
+}))
 sys.stdout.write("\n")
 '
 elif command -v python >/dev/null 2>&1; then
   ADDITIONAL_CONTEXT="$ADDITIONAL_CONTEXT" python -c '
 import json, os, sys
-sys.stdout.write(json.dumps({"additionalContext": os.environ["ADDITIONAL_CONTEXT"]}))
+sys.stdout.write(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "SessionStart",
+        "additionalContext": os.environ["ADDITIONAL_CONTEXT"]
+    }
+}))
 sys.stdout.write("\n")
 '
 else

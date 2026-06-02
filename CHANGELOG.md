@@ -17,7 +17,27 @@ breaking changes to non-stable surfaces as documented in
 - (next release entries go here)
 
 ### Fixed
-- (next release entries go here)
+- `hooks/{session-start,user-prompt-submit}.sh` now emit
+  `{hookSpecificOutput: {hookEventName, additionalContext}}` instead
+  of the bare `{additionalContext}` form. Claude Code 2.x ignores
+  the legacy shape silently — the user sees no effect from any hook
+  output (trigger keywords, budget warnings, ontology status block,
+  active-mode reminder, project memory). Confirmed against
+  Anthropic's 2.1.x hook reference. Affected emit sites: session-start
+  jq + python3 + python fallbacks; user-prompt-submit trigger and
+  budget branches. Existing bats assertions migrated to the new jq
+  path `.hookSpecificOutput.additionalContext`.
+- `hooks/{session-start,user-prompt-submit}.sh` now resolve every
+  `.omao/...` path against `$CLAUDE_PROJECT_DIR` (with `OMA_PROJECT_DIR`
+  and `$PWD` as fallbacks) instead of the bare cwd. Claude Code spawns
+  hooks from whichever directory `claude` was invoked in, so the
+  previous relative-path lookups silently skipped when the cwd
+  diverged from the project root. Affected paths: trigger detection
+  (`.omao/triggers.json`), active-mode reminder
+  (`.omao/state/active-mode`), project-memory loading
+  (`.omao/project-memory.json`), ontology status block
+  (`.omao/ontology/`), and the budget warning
+  (`.omao/ontology/budgets/`).
 
 ## [0.4.0-preview.1] — 2026-05-02
 
