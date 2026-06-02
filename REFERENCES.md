@@ -107,6 +107,9 @@ quick-access list for humans.
 | <a id="aws-well-arch-genai-lens"></a>AWS Well-Architected Generative AI Lens | https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/generative-ai-lens.html | Design review checklist OMA's `ai-infra` plugin aligns with |
 | <a id="aws-agentic-ai-blog"></a>AWS blog — Build an agentic AI assistant on AWS (reference architecture) | https://aws.amazon.com/blogs/machine-learning/ | General entry point; individual posts rotate — follow the blog index rather than pin a single URL |
 | <a id="aws-modernization"></a>AWS Cloud Migration landing (was aws.amazon.com/modernization/) | https://aws.amazon.com/cloud-migration/ | Updated canonical URL after the modernization alias was retired; used by `plugins/modernization` |
+| <a id="ep-aidlc-methodology"></a>engineering-playbook — AIDLC Methodology | https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology | Reliability framing OMA implements: the dual-axis (Ontology = correctness, Harness = safety) layered on the official AWS Labs AIDLC, with AgenticOps closing the Outer Loop. Single source of truth for the methodology vocabulary OMA's docs reference rather than restate |
+| <a id="ep-ontology-engineering"></a>engineering-playbook — Ontology Engineering | https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology/ontology-engineering | "Prompt engineering is ontology engineering." Typed world model + DDD building blocks + Inner/Middle/Outer triple feedback loop ("living ontology"). Conceptual basis for `docs/docs/ontology-engineering.md` and the `schemas/ontology/` entities |
+| <a id="ep-harness-engineering"></a>engineering-playbook — Harness Engineering | https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology/harness-engineering | "The agent is not the hard part — the harness is." Seven harness patterns (circuit breaker, retry budget, timeout, output gate, PII masking, injection defense, cost limit) + independent verification. Conceptual basis for `docs/docs/harness-engineering.md`, the Harness DSL v2 `policies` block, and `oma compile --strict-enterprise` |
 
 ## Tools used at runtime
 
@@ -121,7 +124,10 @@ quick-access list for humans.
 | <a id="docusaurus"></a>Docusaurus | https://docusaurus.io/ | `docs/` site generator |
 | <a id="lychee"></a>lycheeverse/lychee-action | https://github.com/lycheeverse/lychee-action | Link-check CI (see `.github/workflows/link-check.yml` and `.lycheeignore`) |
 | <a id="opa-tool"></a>OPA binary | https://www.openpolicyagent.org/docs/latest/#running-opa | `scripts/oma/validate.sh` policy evaluation shell-out |
-| <a id="mermaid"></a>Mermaid | https://mermaid.js.org/ | Flow diagrams in docs (`theme-mermaid` plugin) |
+| <a id="mermaid"></a>Mermaid | https://mermaid.js.org/ | Legacy flow diagrams in docs (`theme-mermaid` plugin); retired for new diagrams per the diagram-authoring standard |
+| <a id="d2"></a>D2 | https://d2lang.com/ | REQUIRED tool for flow / sequence / state diagrams (`steering/workflows/diagram-authoring-standard.md`) |
+| <a id="diagrams"></a>mingrammer Diagrams | https://diagrams.mingrammer.com/ | REQUIRED tool for infrastructure / cloud architecture diagrams; renders AWS/K8s icon nodes from Python source |
+| <a id="excalidraw"></a>Excalidraw | https://excalidraw.com/ | REQUIRED tool for concept / explanatory sketches (mental models, 2-axis framings) |
 | <a id="hypothesis"></a>Hypothesis (property-based testing) | https://hypothesis.readthedocs.io/ | Referenced by `plugins/aidlc` agentic TDD rules; property-based invariant generator |
 | <a id="kiro"></a>Kiro | https://kiro.dev/ | Secondary agent harness alongside Claude Code; `scripts/install/kiro.sh` target |
 | <a id="gh-cli"></a>GitHub CLI (`gh`) | https://cli.github.com/ | Release create, PR open, workflow dispatch across release pipeline |

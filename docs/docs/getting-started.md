@@ -33,7 +33,7 @@ OMA 에는 **세 개의 서로 다른 설치 스크립트**가 있고 각각 역
 
 ```bash
 # OMA CLI 설치 (AgenticOps 쓸 계획이면)
-curl -fsSL https://raw.githubusercontent.com/aws-samples/sample-oh-my-aidlcops/v0.2.0-preview.1/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/aws-samples/sample-oh-my-aidlcops/v0.4.0-preview.1/install.sh | bash
 cd my-project
 oma setup      # .omao/profile.yaml + 씨드 온톨로지 생성
 oma doctor     # 환경 점검

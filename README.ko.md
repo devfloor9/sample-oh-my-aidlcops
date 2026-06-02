@@ -1,38 +1,61 @@
 # sample-oh-my-aidlcops
 
-**AIDLC × AgenticOps** — AI 기반 개발 라이프사이클(AIDLC)을 에이전트 기반 운영 자동화로 완성하는 플러그인 마켓플레이스입니다.
+**AIDLC를 신뢰할 수 있게 만듭니다.** OMA는 [AIDLC 방법론](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)의
+두 신뢰성 축 — **온톨로지 엔지니어링**(정확성)과 **하네스 엔지니어링**(안전성) — 을
+설치 가능한 플러그인으로 제공하는 Claude Code · Kiro 플러그인 마켓플레이스입니다.
+**AIDLC Workflows**가 프로세스 척추 역할을 하고, **AgenticOps**가 운영 신호를
+온톨로지로 되돌리는 피드백 루프를 닫습니다.
 
 [English README](./README.md) · [문서](./docs/) · [플러그인](./plugins/) · [Steering](./steering/) · [릴리스](https://aws-samples.github.io/sample-oh-my-aidlcops/releases) · [References](./REFERENCES.md)
 
 ---
 
-## v0.3 의 신규 기능
+## Ontology + Harness Engineering 의 이지버튼
 
-`v0.3.0-preview.1` 은 OMA 의 온톨로지·하네스 레이어를 호환성을 유지한 채
-엔터프라이즈 수준으로 확장한 릴리스입니다.
+OMA 의 목표는 **한 번의 설치로 끝나는 이지버튼**입니다. 마켓플레이스를 추가하고
+플러그인을 설치하면, AIDLC 방법론의 두 신뢰성 축 — 온톨로지 엔지니어링과 하네스
+엔지니어링 — 이 Claude Code 또는 Kiro 에서 곧바로 활성화됩니다. 스키마·정책·훅을
+직접 만들 필요가 없습니다. 사람은 체크포인트에서 승인하고, 나머지는 에이전트가
+실행합니다.
 
-- **두 개의 신규 온톨로지 엔티티** — `Spec` 과 `ADR` (Draft 2020-12) 추가로
-  Phase 1(Inception) → Construction 산출물 traceability 체인이 닫힙니다.
-- **기존 6 개 스키마의 엔터프라이즈 필드 확장** — `approval_chain`,
-  `risk_exceptions`, `owasp_llm_top10_id`, `nist_ai_rmf_subcategory`,
-  `compliance_refs[]`, `trace_id` / `span_id` (OTel), `cost_center_owner` 등
-  전부 optional 이라 기존 fixture 는 그대로 통과합니다.
-- **하네스 DSL v2** — 선택적 `workflows` (DAG), `telemetry`
-  (OpenTelemetry Collector), `policies` (OPA/Rego), `metadata.labels` 블록.
-  `version: 1` 파일은 변경 없이 계속 컴파일됩니다.
-- **`oma doctor --enterprise`** — 8 가지 probe 실행 (ontology-2020-12,
-  slsa-digest, risk-classification, audit-jsonl, dsl-version, policies-rego,
-  plugin-dsl, mcp-pinned).
-- **`oma compile --strict-enterprise`** — opt-in 게이트: DSL v2 만 허용,
-  `approval_chain` 비어 있지 않아야 함, `Deployment.artifact` object
-  형태 + `sha256` digest, 모든 Risk 가 OWASP 또는 NIST 로 분류되어야 함.
-- **`oma validate <entity.yaml>`** — 8 가지 온톨로지 엔티티에 대해 스키마
-  검증과 OPA 평가를 실행. `opa` 미설치 시 graceful fallback.
-- **`oma run-workflow`** — DSL v2 워크플로우를 topo-sort 하여 실행 순서
-  출력 (stub; 실제 호출 계층은 후속 릴리스에서 추가).
-- **감사 이벤트 JSON-L 로 전환** — `python -m tools.oma_audit.append` 가
-  `schemas/audit/event.schema.json` 스키마로 검증한 뒤
-  `.omao/audit.jsonl` 에 append 합니다.
+```text
+/plugin marketplace add https://github.com/aws-samples/sample-oh-my-aidlcops
+/plugin install ai-infra@oh-my-aidlcops agenticops@oh-my-aidlcops aidlc@oh-my-aidlcops modernization@oh-my-aidlcops
+# → typed ontology + harness DSL + AWS hosted MCP 배선까지 즉시 사용 가능
+```
+
+### 지향점 — 엔터프라이즈 운영 자동화 오픈 툴셋
+
+OMA 는 **엔터프라이즈 운영 자동화를 위한 오픈 툴셋**으로 발전하고 있습니다.
+
+1. **현재** — 온톨로지 + 하네스 엔지니어링을 설치 가능한 플러그인으로 제공하고,
+   AWS Hosted MCP(awslabs/mcp)를 기본 런타임 데이터 평면으로 사용하며,
+   AgenticOps 가 피드백 루프를 닫습니다.
+2. **다음** — AWS Hosted MCP 커버리지 확대와 더불어 **DevOps 에이전트** 및
+   **Security 에이전트** 를 일급으로 통합해, 배포·관측·보안 리뷰가 동일한 승인
+   모델 안에서 거버넌스된 에이전트로 동작하도록 합니다.
+3. **약속** — 몇 개의 플러그인만 설치하면, 감사 가능하고 정책 게이트가 걸리며
+   하네스로 제약된 엔터프라이즈급 운영 자동화를 기본값으로 얻습니다 — 직접
+   조립하는 맞춤형 플랫폼이 아니라.
+
+## v0.4 의 신규 기능
+
+`v0.4.0-preview.1` 은 v0.3 의 엔터프라이즈 온톨로지·하네스 표면 위에서 프로젝트를
+신뢰성 2축 중심으로 재포지셔닝하고 플러그인 이름을 정리한 릴리스입니다.
+
+- **신뢰성 2축 문서** — 온톨로지 엔지니어링(정확성)과 하네스 엔지니어링(안전성)
+  전용 페이지를 추가하고 각 축을 OMA 구현에 매핑했습니다. 하네스 패턴 커버리지는
+  부분/로드맵 상태까지 정직하게 표기합니다.
+- **플러그인 이름 정리** — `agentic-platform → ai-infra`, `aidlc-inception` +
+  `aidlc-construction` 을 단일 `aidlc` 플러그인으로 병합.
+- **온톨로지 8 엔티티** — `Agent`, `Skill`, `Deployment`, `Incident`, `Budget`,
+  `Risk` 에 `Spec` 과 `ADR`(Draft 2020-12)을 더해 Phase 1 → Construction
+  traceability 체인을 닫습니다.
+- **하네스 DSL v2** — 선택적 `workflows`(DAG), `telemetry`(OpenTelemetry),
+  `policies`(OPA/Rego), `metadata.labels`. `version: 1` 파일은 변경 없이 컴파일.
+- **엔터프라이즈 게이트** — `oma doctor --enterprise`(8 probe),
+  `oma compile --strict-enterprise`, `oma validate <entity.yaml>`, 그리고
+  `python -m tools.oma_audit.append` 기반 JSON-L 감사 이벤트.
 
 전체 내역은 [CHANGELOG.md](./CHANGELOG.md) 와
 [릴리스 페이지](https://aws-samples.github.io/sample-oh-my-aidlcops/releases) 에
@@ -40,9 +63,35 @@
 
 ## OMA 란
 
-`oh-my-aidlcops`(OMA)는 [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)(OMC)의 형제 프로젝트입니다. OMC가 범용 Claude Code 워크플로우를 오케스트레이션한다면, OMA는 **AIDLC 루프**(Inception → Construction → Operations)에 특화됩니다.
+`oh-my-aidlcops`(OMA)는 [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)(OMC)의 형제 프로젝트입니다. OMC가 범용 Claude Code 워크플로우를 오케스트레이션한다면, OMA는 **AIDLC 루프**(Inception → Construction → Operations)를 *에이전트로 돌릴 수 있을 만큼 신뢰성 있게* 만드는 데 특화됩니다.
 
-핵심 명제: AIDLC는 운영까지 에이전트 자동화되었을 때 비로소 완성됩니다. OMA는 AWS 공식 [AIDLC workflows](https://github.com/awslabs/aidlc-workflows)에 **AgenticOps** 레이어(자기개선 피드백 루프, 자율 배포, 지속 평가, 인시던트 대응, 비용 거버넌스)를 결합하여 라이프사이클이 사람 개입 없이 스스로 닫히도록 구성합니다.
+### 문제: 에이전틱 AIDLC는 역량이 아니라 신뢰성에서 무너진다
+
+[AIDLC 방법론](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)은
+AI 주도 개발이 반복적으로 실패하는 세 가지 패턴을 지목하며, 어느 것도 모델 품질의
+문제가 아닙니다.
+
+- **할루시네이션·드리프트** — 개념이 프롬프트·세션마다 다른 의미를 갖기 때문에, 핸드오프는 사람이 재해석할 때만 성립합니다.
+- **런어웨이 실행** — 아키텍처적 제약이 없으면 에이전트 루프가 수백 번 재시도를 발사합니다(방법론의 핀테크 사례: 847회 재시도, 약 $2,200, 3시간 장애).
+- **셀프 채점** — 코드를 작성한 에이전트가 테스트도 작성하므로 자신의 사각지대가 검증을 통과합니다.
+
+방법론은 이를 **신뢰성 2축**으로 답합니다. *온톨로지 엔지니어링*이 에이전트 산출물의
+**정확성**(WHAT/WHEN)을 보장하고, *하네스 엔지니어링*이 실행 방식의 **안전성**(HOW)을
+강제합니다. OMA는 이 2축을 AWS 위에서 설치 가능하게 구현한 것입니다.
+
+### OMA가 설치하는 세 기둥
+
+| 방법론 축 | 보장 | OMA 구현 | 진입점 |
+|---|---|---|---|
+| **온톨로지 엔지니어링** | 정확성 (WHAT · WHEN) | `schemas/ontology/` 8개 JSON-Schema 엔티티, `oma validate`, 스키마 진화 규칙 | `/oma:inception`, `oma validate` |
+| **하네스 엔지니어링** | 안전성 (HOW) | 하네스 DSL v2 (`policies`/OPA, `telemetry`), `oma compile --strict-enterprise`, MCP 버전 pin, 샌드박싱된 budget 평가 | `oma doctor --enterprise`, `oma compile` |
+| **AgenticOps (Outer Loop)** | 살아있는 온톨로지 | `self-improving-loop`, `continuous-eval`, `incident-response`가 운영 신호를 온톨로지로 환류 | `/oma:agenticops`, `/oma:self-improving` |
+
+**AIDLC Workflows** — AWS 공식 [awslabs/aidlc-workflows](https://github.com/awslabs/aidlc-workflows)
+3단계 루프 — 는 이 기둥들이 걸리는 *프로세스 척추*입니다. OMA는 여기에 `*.opt-in.md`
+확장만 기여하며 core를 fork하지 않습니다. 그 결과 AIDLC는 "설계·구축 후 기대"가
+아니라, 모든 산출물이 검증된 온톨로지 문서이고 모든 에이전트 행동이 하네스 안에서
+실행되는 라이프사이클이 됩니다.
 
 ## 대상 사용자
 
@@ -57,8 +106,7 @@
 |---|---|---|
 | **`ai-infra`** | EKS 위 Agentic AI Platform 구축·운영 | `agentic-eks-bootstrap`, `vllm-serving-setup`, `inference-gateway-routing`, `langfuse-observability`, `gpu-resource-management`, `ai-gateway-guardrails` |
 | **`agenticops`** | 에이전트 기반 운영 자동화 | `self-improving-loop`, `autopilot-deploy`, `incident-response`, `continuous-eval`, `cost-governance`, `audit-trail` |
-| **`aidlc`** | AIDLC Phase 1 확장 | `structured-intake`, `requirements-analysis`, `user-stories`, `workflow-planning` |
-| **`aidlc`** | AIDLC Phase 2 확장 | `component-design`, `code-generation`, `test-strategy`, `risk-discovery`, `quality-gates` |
+| **`aidlc`** | AIDLC Phase 1(Inception) + Phase 2(Construction) 확장 | `requirements-analysis`, `user-stories`, `workflow-planning`, `component-design`, `code-generation`, `test-strategy`, `risk-discovery`, `quality-gates` |
 | **`modernization`** | 레거시 워크로드 AWS 이전 (6R 전략) | `workload-assessment`, `modernization-strategy`, `to-be-architecture`, `containerization`, `cutover-planning` |
 
 ## Tier-0 워크플로우
@@ -95,9 +143,9 @@ oma doctor
 어떻게 강제되는가) 은 [Easy Button 문서](https://aws-samples.github.io/sample-oh-my-aidlcops/docs/easy-button)
 를 참조하세요.
 
-> **Tech Preview 고지** — `v0.3.0-preview.1` 은 ontology 8 개 엔티티와
-> DSL v2 를 stable 로 간주합니다. CLI UX 일부와 doctor 리포트 구조는 GA
-> 이전에 변경될 수 있습니다. [Support Policy](https://aws-samples.github.io/sample-oh-my-aidlcops/docs/support-policy) 를
+> **Tech Preview 고지** — `v0.4.0-preview.1` 은 `profile.yaml` v1, ontology
+> 8 개 엔티티, Harness DSL v2 를 stable 로 간주합니다. CLI UX 일부와 doctor
+> 리포트 구조는 GA 이전에 변경될 수 있습니다. [Support Policy](https://aws-samples.github.io/sample-oh-my-aidlcops/docs/support-policy) 를
 > 확인하세요.
 
 ### Claude Code (네이티브 마켓플레이스 — Claude Code 2.0+)
@@ -154,7 +202,7 @@ bash scripts/install/aidlc-extensions.sh
 # awslabs/aidlc-workflows를 ~/.aidlc에 clone하고 OMA opt-in 확장을 심링크합니다.
 ```
 
-### 빠른 시작 — v0.3 엔터프라이즈 플래그
+### 빠른 시작 — 엔터프라이즈 플래그
 
 `oma setup` 이후 Day 1 에 실행해 볼 만한 커맨드 네 가지입니다.
 
@@ -178,9 +226,8 @@ oma run-workflow ai-infra platform-bootstrap
 # → execution order: preflight -> provision -> verify
 ```
 
-v0.2 에서 v0.3 으로의 이전은 플래그 하나 차이입니다. 모든 신규 필드가
-optional 이고, `--strict-enterprise` 를 켤 때만 강제됩니다. 단계별 도입
-체크리스트는
+도입은 플래그 하나 차이입니다. 모든 엔터프라이즈 필드가 optional 이고,
+`--strict-enterprise` 를 켤 때만 강제됩니다. 단계별 도입 체크리스트는
 [Enterprise readiness](https://aws-samples.github.io/sample-oh-my-aidlcops/docs/enterprise-readiness)
 를 참고하세요.
 
@@ -216,11 +263,10 @@ Tier-0 트리거 ── 키워드 매칭? ──▶ /oma:<workflow>
     ▼
 플러그인 디스패치
     │
-    ├─▶ ai-infra    (구축)
-    ├─▶ agenticops          (운영)
-    ├─▶ aidlc     (Phase 1)
-    ├─▶ aidlc  (Phase 2)
-    └─▶ modernization       (레거시 → AWS)
+    ├─▶ ai-infra        (런타임 구축/운영)
+    ├─▶ agenticops      (운영)
+    ├─▶ aidlc           (Phase 1 + Phase 2)
+    └─▶ modernization   (레거시 → AWS)
     │
     ▼
 Skill 실행, AWS Hosted MCP 호출
@@ -241,8 +287,9 @@ Skill 실행, AWS Hosted MCP 호출
 모든 OMA 플러그인은 두 개의 공유 레이어 위에서 동작합니다.
 
 1. **온톨로지** (`ontology/`, `schemas/ontology/`) — 모든 플러그인과 스킬이
-   합의하는 여섯 개의 도메인 개념을 JSON Schema로 정의합니다: `Agent`,
-   `Skill`, `Deployment`, `Incident`, `Budget`, `Risk`. Construction→Operations
+   합의하는 여덟 개의 도메인 개념을 JSON Schema로 정의합니다: `Agent`,
+   `Skill`, `Deployment`, `Incident`, `Budget`, `Risk`, 그리고 `Spec`, `ADR`.
+   Construction→Operations
    핸드오프는 더 이상 산문 기술이 아닌, 검증된 `Deployment` 문서로 전달됩니다.
    [ontology/README.md](./ontology/README.md), [ontology/glossary.md](./ontology/glossary.md)
    를 참조하세요.

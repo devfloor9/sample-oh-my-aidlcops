@@ -6,6 +6,21 @@ sidebar_position: 3
 
 본 문서는 `oh-my-aidlcops`(OMA)의 설계 명제를 정리합니다. OMA가 기존 AIDLC 프레임워크에 **AgenticOps** 레이어를 결합한 이유, 이 조합이 왜 필연인지, 그리고 이 통합이 실제로 무엇을 자동화하는지를 설명합니다.
 
+## OMA = 방법론의 실행 레이어 (신뢰성 2축)
+
+OMA 의 출발점은 [AIDLC 방법론](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)이 정의한 **신뢰성 2축**입니다. 에이전틱 AIDLC 의 실패는 모델 역량이 아니라 신뢰성에서 발생하며, 방법론은 이를 두 축으로 나눕니다 — OMA 는 각 축을 설치 가능한 형태로 구현합니다.
+
+| 축 | 질문 | 보장 | OMA 구현 | 상세 |
+|---|---|---|---|---|
+| **온톨로지 엔지니어링** | WHAT · WHEN | 정확성 (할루시네이션·드리프트 방지) | `schemas/ontology/` 8 엔티티, `oma validate` | [Ontology Engineering](./ontology-engineering.md) |
+| **하네스 엔지니어링** | HOW | 안전성 (런어웨이·셀프채점 차단) | 하네스 DSL v2, `oma compile --strict-enterprise` | [Harness Engineering](./harness-engineering.md) |
+
+아래에 이어지는 "Operations 미완결" 서사와 AgenticOps 레이어는 이 2축 위에서 **Outer Loop**(운영 신호 → 온톨로지 환류, 방법론 용어로 "살아있는 온톨로지")를 자동화하는 부분입니다. 즉 AgenticOps 는 별도 기능이 아니라 온톨로지 축의 가장 바깥 피드백 루프입니다.
+
+두 축은 **이지버튼**으로 제공됩니다 — 사용자가 스키마·정책·훅을 직접 짜는 것이 아니라, 플러그인 설치만으로 typed 온톨로지와 하네스 DSL 이 활성화됩니다. 이 이지버튼 위에서 OMA 는 AWS Hosted MCP 를 기본 데이터 평면으로 삼고, 후속으로 **DevOps 에이전트**·**Security 에이전트** 를 동일한 Tier-0 승인 모델에 통합해 **엔터프라이즈 운영 자동화 오픈 툴셋**으로 확장됩니다.
+
+---
+
 ## 문제 정의 — AIDLC의 미완결 구간
 
 AWS 공식 [awslabs/aidlc-workflows](https://github.com/awslabs/aidlc-workflows)는 AI 주도 개발 수명주기를 세 단계로 구조화합니다.
@@ -44,17 +59,17 @@ OMA는 `agenticops` 플러그인을 통해 운영 단계에 다음 여섯 스킬
 
 ```mermaid
 flowchart LR
-    BF[Brownfield<br/>workload] -.->|modernization<br/>(6R)| I
-    I[Inception<br/>aidlc · spec·stories] --> C[Construction<br/>aidlc · design·code·tests]
-    C --> O[Operations<br/>agenticops · deploy·monitor]
-    O -->|트레이스·메트릭·인시던트| SI[self-improving-loop]
-    SI -->|스킬·프롬프트 개선 PR| C
-    SI -->|요구사항 반영 제안| I
-    O -->|비용·규정 신호| CG[cost-governance]
-    CG -->|예산 가드| O
-    O -->|회귀 탐지| CE[continuous-eval]
-    CE -->|품질 게이트| C
-    RT[ai-infra<br/>런타임 기반] -.->|EKS · vLLM · Langfuse| O
+    BF["Brownfield workload"] -. "modernization 6R" .-> I
+    I["Inception · aidlc · spec/stories"] --> C["Construction · aidlc · design/code/tests"]
+    C --> O["Operations · agenticops · deploy/monitor"]
+    O -- "트레이스/메트릭/인시던트" --> SI["self-improving-loop"]
+    SI -- "스킬/프롬프트 개선 PR" --> C
+    SI -- "요구사항 반영 제안" --> I
+    O -- "비용/규정 신호" --> CG["cost-governance"]
+    CG -- "예산 가드" --> O
+    O -- "회귀 탐지" --> CE["continuous-eval"]
+    CE -- "품질 게이트" --> C
+    RT["ai-infra · 런타임 기반"] -. "EKS / vLLM / Langfuse" .-> O
 ```
 
 이 루프의 핵심은 **Operations → Construction 역방향 흐름**이 자동화된다는 점입니다. 기존 AIDLC 구현에서는 이 화살표가 인간의 이슈 분류와 백로그 관리에 의존했지만, OMA에서는 `self-improving-loop`가 트레이스 패턴을 분석해 구체적인 스킬·프롬프트 수정 PR을 생성합니다.

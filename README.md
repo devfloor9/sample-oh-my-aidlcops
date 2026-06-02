@@ -1,40 +1,62 @@
 # sample-oh-my-aidlcops
 
-**AIDLC × AgenticOps** — a plugin marketplace that automates the full AI-Driven
-Development Lifecycle with agent-based operations on AWS.
+**Make AIDLC reliable.** OMA is a Claude Code · Kiro plugin marketplace that turns
+the [AIDLC methodology](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)'s
+two reliability axes — **Ontology Engineering** (correctness) and **Harness
+Engineering** (safety) — into installable plugins, with **AIDLC Workflows** as the
+process spine and **AgenticOps** closing the feedback loop back into the ontology.
 
 [한국어 README](./README.ko.md) · [Documentation](./docs/) · [Plugins](./plugins/) · [Steering](./steering/) · [Releases](https://aws-samples.github.io/sample-oh-my-aidlcops/releases) · [References](./REFERENCES.md)
 
 ---
 
-## What's new in v0.3
+## The easy button for Ontology + Harness Engineering
 
-Release `v0.3.0-preview.1` turns OMA's ontology + harness layer into an
-enterprise-grade surface without any breaking changes:
+OMA's goal is a **one-install easy button**: add the marketplace, install the
+plugins, and the AIDLC methodology's two reliability axes — Ontology Engineering
+and Harness Engineering — are active in Claude Code or Kiro without hand-rolling
+any schemas, policies, or hooks. You approve at checkpoints; agents do the rest.
 
-- **Two new ontology entities** — `Spec` and `ADR` (Draft 2020-12),
-  closing the Phase-1 → Construction traceability chain.
-- **Enterprise fields on the six existing schemas** — `approval_chain`,
-  `risk_exceptions`, `owasp_llm_top10_id`, `nist_ai_rmf_subcategory`,
-  `compliance_refs[]`, `trace_id` / `span_id` (OTel), `cost_center_owner`,
-  and more — every field optional so existing fixtures keep validating.
-- **Harness DSL v2** — optional `workflows` (DAG), `telemetry`
-  (OpenTelemetry Collector), `policies` (OPA/Rego), and `metadata.labels`
-  blocks. `version: 1` files keep compiling unchanged.
-- **`oma doctor --enterprise`** — 8 probes (ontology-2020-12, slsa-digest,
-  risk-classification, audit-jsonl, dsl-version, policies-rego,
-  plugin-dsl, mcp-pinned).
-- **`oma compile --strict-enterprise`** — opt-in gate: DSL v2 only,
-  `approval_chain` required on approved deployments, object-form
-  `Deployment.artifact` with `sha256` digest, Risk classified under OWASP
-  or NIST.
-- **`oma validate <entity.yaml>`** — schema + OPA evaluation for all 8
-  ontology entity types with graceful fallback when `opa` is absent.
-- **`oma run-workflow`** — topo-sort and print a DSL v2 workflow's
-  execution plan (stub; runtime invocation lands in a later release).
-- **Audit events as JSON-L** — `python -m tools.oma_audit.append`
-  validates every record against `schemas/audit/event.schema.json` before
-  appending to `.omao/audit.jsonl`.
+```text
+/plugin marketplace add https://github.com/aws-samples/sample-oh-my-aidlcops
+/plugin install ai-infra@oh-my-aidlcops agenticops@oh-my-aidlcops aidlc@oh-my-aidlcops modernization@oh-my-aidlcops
+# → typed ontology + harness DSL + AWS hosted MCP wiring, ready to use
+```
+
+### Where this is going — an enterprise operations open toolset
+
+OMA is being built into an **open toolset for enterprise operations automation**.
+The trajectory:
+
+1. **Today** — Ontology + Harness Engineering as installable plugins, AWS Hosted
+   MCP (awslabs/mcp) as the default runtime data layer, AgenticOps closing the
+   feedback loop.
+2. **Next** — deeper AWS Hosted MCP coverage plus first-class **DevOps agent**
+   and **Security agent** integrations, so deploy, observability, and security
+   review run as governed agents inside the same approval model.
+3. **The promise** — install a few plugins and get enterprise-grade operations
+   automation that is auditable, policy-gated, and harness-constrained by
+   default — not a bespoke platform you assemble yourself.
+
+## What's new in v0.4
+
+Release `v0.4.0-preview.1` repositions the project around the reliability
+dual-axis and renames plugins for clarity, building on the enterprise ontology +
+harness surface introduced in v0.3:
+
+- **Reliability dual-axis docs** — dedicated Ontology Engineering (correctness)
+  and Harness Engineering (safety) pages mapping each axis to its OMA
+  implementation, with honest partial/roadmap status for harness patterns.
+- **Plugin renames** — `agentic-platform → ai-infra`, and
+  `aidlc-inception` + `aidlc-construction` merged into a single `aidlc` plugin.
+- **8 ontology entities** — `Agent`, `Skill`, `Deployment`, `Incident`,
+  `Budget`, `Risk`, plus `Spec` and `ADR` (Draft 2020-12) closing the
+  Phase-1 → Construction traceability chain.
+- **Harness DSL v2** — optional `workflows` (DAG), `telemetry` (OpenTelemetry),
+  `policies` (OPA/Rego), `metadata.labels`. `version: 1` files compile unchanged.
+- **Enterprise gates** — `oma doctor --enterprise` (8 probes),
+  `oma compile --strict-enterprise`, `oma validate <entity.yaml>`, and JSON-L
+  audit events via `python -m tools.oma_audit.append`.
 
 Full details in [CHANGELOG.md](./CHANGELOG.md) and on the
 [Releases page](https://aws-samples.github.io/sample-oh-my-aidlcops/releases).
@@ -43,14 +65,43 @@ Full details in [CHANGELOG.md](./CHANGELOG.md) and on the
 
 `oh-my-aidlcops` (OMA) is the sibling project of
 [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) (OMC).
-Where OMC orchestrates generic Claude Code workflows, OMA specializes in the
-**AIDLC loop**: Inception → Construction → Operations.
+Where OMC orchestrates generic Claude Code workflows, OMA specializes in making
+the **AIDLC loop** — Inception → Construction → Operations — *reliable enough to
+run with agents*.
 
-The thesis: AIDLC is complete only when operations are agent-automated. OMA
-fuses the AWS-official [AIDLC workflows](https://github.com/awslabs/aidlc-workflows)
-with an **AgenticOps** layer (self-improving feedback loops, autonomous deploys,
-continuous evaluation, incident response, cost governance) so the lifecycle
-closes itself without human execution at every step.
+### The problem: agentic AIDLC fails on reliability, not capability
+
+The [AIDLC methodology](https://devfloor9.github.io/engineering-playbook/docs/aidlc/methodology)
+identifies that AI-driven development breaks down in three recurring ways, and
+none of them are about model quality:
+
+- **Hallucination & drift** — concepts mean different things across prompts and
+  sessions, so handoffs only work because a human re-interprets them.
+- **Runaway execution** — without architectural limits an agent loop can fire
+  hundreds of retries (the methodology's fintech case: 847 retries, ~$2,200, a
+  3-hour outage) before anyone notices.
+- **Self-grading** — the agent that wrote the code also writes the tests, so its
+  own blind spots survive verification.
+
+The methodology answers these with a **reliability dual-axis**: *Ontology
+Engineering* guarantees the **correctness** of what agents produce (the WHAT/WHEN),
+and *Harness Engineering* enforces the **safety** of how they execute (the HOW).
+OMA is the installable implementation of that dual-axis on AWS.
+
+### The three pillars OMA installs
+
+| Methodology axis | Guarantees | OMA implementation | Entry point |
+|---|---|---|---|
+| **Ontology Engineering** | Correctness (WHAT · WHEN) | 8 JSON-Schema entities in `schemas/ontology/`, `oma validate`, schema-evolution rules | `/oma:inception`, `oma validate` |
+| **Harness Engineering** | Safety (HOW) | Harness DSL v2 (`policies`/OPA, `telemetry`), `oma compile --strict-enterprise`, pinned MCP, sandboxed budget eval | `oma doctor --enterprise`, `oma compile` |
+| **AgenticOps (Outer Loop)** | Living ontology | `self-improving-loop`, `continuous-eval`, `incident-response` feeding operational signal back into the ontology | `/oma:agenticops`, `/oma:self-improving` |
+
+**AIDLC Workflows** — the AWS-official
+[awslabs/aidlc-workflows](https://github.com/awslabs/aidlc-workflows) 3-phase loop —
+is the *process spine* these pillars hang on. OMA contributes only `*.opt-in.md`
+extensions to it and never forks the core. The result: AIDLC stops being "design
+and build, then hope," and becomes a lifecycle where every artifact is a validated
+ontology document and every agent action runs inside a harness.
 
 ## Who is this for?
 
@@ -67,8 +118,7 @@ closes itself without human execution at every step.
 |---|---|---|
 | **`ai-infra`** | Build & run the Agentic AI Platform on EKS | `agentic-eks-bootstrap`, `vllm-serving-setup`, `inference-gateway-routing`, `langfuse-observability`, `gpu-resource-management`, `ai-gateway-guardrails` |
 | **`agenticops`** | Operate it with agents | `self-improving-loop`, `autopilot-deploy`, `incident-response`, `continuous-eval`, `cost-governance`, `audit-trail` |
-| **`aidlc`** | AIDLC Phase 1 extensions | `structured-intake`, `requirements-analysis`, `user-stories`, `workflow-planning` |
-| **`aidlc`** | AIDLC Phase 2 extensions | `component-design`, `code-generation`, `test-strategy`, `risk-discovery`, `quality-gates` |
+| **`aidlc`** | AIDLC Phase 1 (Inception) + Phase 2 (Construction) extensions | `requirements-analysis`, `user-stories`, `workflow-planning`, `component-design`, `code-generation`, `test-strategy`, `risk-discovery`, `quality-gates` |
 | **`modernization`** | Legacy workload modernization to AWS (6R strategy) | `workload-assessment`, `modernization-strategy`, `to-be-architecture`, `containerization`, `cutover-planning` |
 
 ## Tier-0 workflows
@@ -107,8 +157,8 @@ See the [Easy Button docs](https://aws-samples.github.io/sample-oh-my-aidlcops/d
 for what `oma setup` writes, how the 12 doctor probes work, and how the
 ontology + harness DSL get enforced at runtime.
 
-> **Tech Preview notice** — `v0.2.0-preview.1` stabilizes `profile.yaml` v1
-> and the 6 ontology schemas. Everything else (CLI UX, DSL fields, doctor
+> **Tech Preview notice** — `v0.4.0-preview.1` treats `profile.yaml` v1, the 8
+> ontology schemas, and Harness DSL v2 as stable. Everything else (CLI UX, doctor
 > report shape) may evolve before GA. See [Support Policy](https://aws-samples.github.io/sample-oh-my-aidlcops/docs/support-policy).
 
 ### Claude Code (native marketplace — Claude Code 2.0+)
@@ -166,7 +216,7 @@ bash scripts/install/aidlc-extensions.sh
 # Clones awslabs/aidlc-workflows into ~/.aidlc and symlinks OMA's opt-in extensions.
 ```
 
-### Quick start — v0.3 enterprise flags
+### Quick start — enterprise flags
 
 After `oma setup`, four commands are worth exercising on day one:
 
@@ -190,7 +240,7 @@ oma run-workflow ai-infra platform-bootstrap
 # → execution order: preflight -> provision -> verify
 ```
 
-Migration from v0.2 is one flag away — every new field is optional
+Adoption is one flag away — every enterprise field is optional
 until you opt in via `--strict-enterprise`. See
 [Enterprise readiness](https://aws-samples.github.io/sample-oh-my-aidlcops/docs/enterprise-readiness)
 for the phased adoption checklist.
@@ -228,11 +278,10 @@ Tier-0 trigger  ─── matches keyword? ──▶ /oma:<workflow>
     ▼
 Plugin dispatch
     │
-    ├─▶ ai-infra    (build)
-    ├─▶ agenticops          (operate)
-    ├─▶ aidlc     (Phase 1)
-    ├─▶ aidlc  (Phase 2)
-    └─▶ modernization       (legacy → AWS)
+    ├─▶ ai-infra        (build/run runtime)
+    ├─▶ agenticops      (operate)
+    ├─▶ aidlc           (Phase 1 + Phase 2)
+    └─▶ modernization   (legacy → AWS)
     │
     ▼
 Skills execute, calling AWS Hosted MCP
@@ -252,12 +301,12 @@ Operations phase continues autonomously
 
 OMA plugins rest on two shared layers:
 
-1. **Ontology** (`ontology/`, `schemas/ontology/`) — six JSON Schemas that
+1. **Ontology** (`ontology/`, `schemas/ontology/`) — eight JSON Schemas that
    define the vocabulary every plugin and skill agrees on: `Agent`, `Skill`,
-   `Deployment`, `Incident`, `Budget`, `Risk`. A handoff between Construction
-   and Operations is no longer a prose description; it is a validated
-   `Deployment` document. See [ontology/README.md](./ontology/README.md) and
-   [ontology/glossary.md](./ontology/glossary.md).
+   `Deployment`, `Incident`, `Budget`, `Risk`, plus `Spec` and `ADR`. A handoff
+   between Construction and Operations is no longer a prose description; it is a
+   validated `Deployment` document. See [ontology/README.md](./ontology/README.md)
+   and [ontology/glossary.md](./ontology/glossary.md).
 2. **Harness DSL** (`schemas/harness/dsl.schema.json`, `tools/oma_compile/`) —
    one `<plugin>.oma.yaml` per plugin is the single source of agents, MCP
    servers, hooks, and triggers. `python -m tools.oma_compile` translates it

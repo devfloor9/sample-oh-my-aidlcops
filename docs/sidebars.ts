@@ -19,6 +19,15 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Reliability dual-axis',
+      collapsed: false,
+      items: [
+        'ontology-engineering',
+        'harness-engineering',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Installation',
       collapsed: false,
       items: [

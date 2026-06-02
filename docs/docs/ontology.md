@@ -7,7 +7,7 @@ sidebar_position: 7
 # Ontology — shared vocabulary
 
 OMA separates **what the system talks about** from **how the harness runs it**.
-This page covers the "what": six JSON Schemas every plugin and skill agrees on.
+This page covers the "what": eight JSON Schemas every plugin and skill agrees on.
 
 :::info Why this exists
 Before this layer, `autopilot-deploy.skill` and `construction-loop.skill` both
@@ -16,16 +16,22 @@ EKS cluster name, the other meant `eks | ec2 | lambda`. Handoffs worked only
 because a human re-interpreted. The ontology closes that gap.
 :::
 
-## Six core entities
+## Eight core entities
 
 | Entity       | Schema file                                      | Produced by                         | Consumed by                                |
 |--------------|--------------------------------------------------|-------------------------------------|--------------------------------------------|
+| `Spec`       | `schemas/ontology/spec.schema.json`              | `aidlc` (inception)                 | Construction; `Deployment.spec_ref`        |
+| `ADR`        | `schemas/ontology/adr.schema.json`               | `aidlc` (inception/construction)    | Construction; `Deployment.adr_refs`        |
 | `Agent`      | `schemas/ontology/agent.schema.json`             | plugin author                       | Claude Code, Kiro, oma-compile             |
 | `Skill`      | `schemas/ontology/skill.schema.json`             | plugin author                       | Claude Code skill loader                   |
 | `Deployment` | `schemas/ontology/deployment.schema.json`        | `aidlc`                | `agenticops.autopilot-deploy`              |
 | `Incident`   | `schemas/ontology/incident.schema.json`          | `agenticops.incident-response`      | human approver; auto-rollback              |
 | `Budget`     | `schemas/ontology/budget.schema.json`            | plugin author / finops              | `agenticops.cost-governance`               |
 | `Risk`       | `schemas/ontology/risk.schema.json`              | `modernization.risk-discovery`      | stage-gate-strict mode                     |
+
+`Spec` and `ADR` (both Draft 2020-12) close the Inception → Construction
+traceability chain: a `Deployment` points back at the `Spec` that motivated it
+(`spec_ref`) and the `ADR`s that shaped it (`adr_refs`).
 
 ## Relationships at a glance
 
