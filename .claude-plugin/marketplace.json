@@ -2,7 +2,7 @@
   "$schema": "../schemas/marketplace.schema.json",
   "name": "oh-my-aidlcops",
   "metadata": {
-    "description": "AIDLC \u00d7 AgenticOps \u2014 plugin marketplace that automates the full AI-Driven Development Lifecycle with agent-based operations on AWS.",
+    "description": "AIDLC reliability dual-axis as plugins \u2014 Ontology Engineering (correctness) and Harness Engineering (safety) on AWS, with AIDLC Workflows as the process spine and AgenticOps closing the living-ontology Outer Loop.",
     "version": "0.4.0-preview.1"
   },
   "owner": {

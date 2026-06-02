@@ -11,10 +11,26 @@ breaking changes to non-stable surfaces as documented in
 ## [Unreleased]
 
 ### Added
-- (next release entries go here)
+- **Reliability dual-axis docs.** Two methodology-grounded pages —
+  `docs/docs/ontology-engineering.md` (correctness axis: typed world
+  model, Inner/Middle/Outer triple feedback loop, AgenticOps as the
+  living-ontology Outer Loop) and `docs/docs/harness-engineering.md`
+  (safety axis: seven harness patterns mapped to OMA surfaces with
+  honest partial/roadmap status, independent verification) — plus a
+  "Reliability dual-axis" sidebar category.
+- **REFERENCES.** Registered the engineering-playbook AIDLC methodology
+  landing page and the Ontology/Harness Engineering sub-pages as the
+  canonical conceptual sources.
 
 ### Changed
-- (next release entries go here)
+- **Repositioning.** README (en/ko), docs intro, philosophy, and the
+  marketplace description now lead with the AIDLC methodology's
+  reliability dual-axis — Ontology Engineering (correctness) and
+  Harness Engineering (safety) as installable plugins — with AIDLC
+  Workflows as the process spine and AgenticOps reframed as the
+  living-ontology Outer Loop, rather than the prior
+  "Operations-automation marketplace" framing. No code or schema
+  changes.
 
 ### Fixed
 - `hooks/{session-start,user-prompt-submit}.sh` now emit
