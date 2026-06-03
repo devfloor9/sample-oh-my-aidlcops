@@ -75,7 +75,7 @@ flowchart LR
     SI -. "skill tuning" .-> P2
 ```
 
-The diagram above shows how the AIDLC 3-phase structure closes via an agent-driven feedback loop. Observability data from the Operations phase (Langfuse traces, Prometheus metrics, CloudWatch logs) flows back through `self-improving-loop` to automatically improve Construction-phase skills and prompts.
+The diagram above shows how the AIDLC 3-phase structure closes via an agent-driven feedback loop. Observability data from the Operations phase (Langfuse traces, Prometheus metrics, CloudWatch logs) flows back through `self-improving-loop` to automatically improve Construction-phase skills and prompts. Note that trace-based feedback requires an external Langfuse instance plus a trace MCP server configured in the profile (`observability.trace_mcp`).
 
 ## Supported Harnesses (Dual Harness)
 

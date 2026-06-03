@@ -74,7 +74,7 @@ flowchart LR
     SI -. "스킬 튜닝" .-> P3
 ```
 
-Operations 단계의 관측 데이터(Langfuse 트레이스, Prometheus 메트릭, CloudWatch 로그)가 `self-improving-loop` 로 역류해 Construction 스킬·프롬프트의 **자동 개선 PR** 을 만듭니다. 이 역방향 피드백이 이전에는 인간의 이슈 분류와 백로그 관리에 의존하던 경로입니다.
+Operations 단계의 관측 데이터(Langfuse 트레이스, Prometheus 메트릭, CloudWatch 로그)가 `self-improving-loop` 로 역류해 Construction 스킬·프롬프트의 **자동 개선 PR** 을 만듭니다. 이 역방향 피드백이 이전에는 인간의 이슈 분류와 백로그 관리에 의존하던 경로입니다. 단, trace 기반 피드백은 외부 Langfuse 인스턴스와 trace MCP 서버가 프로파일(`observability.trace_mcp`)에 구성되어야 동작합니다.
 
 더 자세한 설계 명제와 거버넌스 철학은 [Philosophy — AIDLC meets AgenticOps](./philosophy-aidlc-meets-agenticops.md) 를 참조합니다.
 

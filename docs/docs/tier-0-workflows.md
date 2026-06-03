@@ -159,6 +159,8 @@ CK1 (요구사항) → CK2 (설계·구현) 2단계.
 ### 목적
 Langfuse 트레이스와 실패 로그를 분석해 스킬·프롬프트를 개선하는 PR을 자동 생성합니다. 피드백 루프의 핵심입니다.
 
+**전제 조건**: 외부 Langfuse 인스턴스와 trace 읽기 MCP 서버가 프로파일(`observability.trace_mcp`)에 구성되어 있어야 합니다. OMA 는 스킬과 MCP 계약을 제공하지만, Langfuse 런타임은 포함하지 않습니다.
+
 ### 호출 예시
 ```bash
 > /oma:self-improving "지난 7일 간 실패 트레이스를 분석해 개선 PR을 제안하라"

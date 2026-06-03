@@ -47,6 +47,8 @@ Through the `agenticops` plugin, OMA injects five skills into the operations pha
 | Skill | Role | Key Input | Key Output |
 |---|---|---|---|
 | `self-improving-loop` | Trace-based skill and prompt improvement | Langfuse traces, failure patterns | PR to `aidlc` |
+
+**Note**: `self-improving-loop` and other trace-based feedback loops require an external Langfuse instance plus a trace-reading MCP server configured in the profile (`observability.trace_mcp`). OMA provides the skills and the contract; the Langfuse runtime is operated by the user.
 | `autopilot-deploy` | Autonomous deployment of validated artifacts | CI success artifacts, policy gates | GitOps commits, rollout events |
 | `incident-response` | Alarm → diagnosis → proposal → action | PagerDuty, CloudWatch alarms | RCA draft, auto-mitigation actions |
 | `continuous-eval` | Sustained quality assessment | Ragas metrics, regression datasets | Quality report, rollback signals |
@@ -69,7 +71,7 @@ flowchart LR
     RT["ai-infra · runtime base"] -. "EKS / vLLM / Langfuse" .-> O
 ```
 
-The core of this loop is the **automated Operations → Construction reverse flow**. In traditional AIDLC implementations, this arrow depended on human issue classification and backlog management. In OMA, `self-improving-loop` analyzes trace patterns and generates concrete skill and prompt fix PRs.
+The core of this loop is the **automated Operations → Construction reverse flow**. In traditional AIDLC implementations, this arrow depended on human issue classification and backlog management. In OMA, `self-improving-loop` analyzes trace patterns and generates concrete skill and prompt fix PRs. However, this Outer Loop closes only when an external Langfuse + trace MCP is configured in the profile (`observability.trace_mcp`). OMA provides the feedback loop skills and the MCP contract, but does not include the trace runtime itself.
 
 ## Reference Design — Self-Improving Agent Loop
 

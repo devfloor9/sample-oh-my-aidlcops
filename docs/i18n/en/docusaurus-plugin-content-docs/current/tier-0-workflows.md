@@ -159,6 +159,8 @@ Activate `continuous-eval`, `incident-response`, and `cost-governance` skills in
 ### Purpose
 Analyze Langfuse traces and failure logs to auto-generate PRs for skill and prompt improvements. Core of the feedback loop.
 
+**Prerequisites**: Requires an external Langfuse instance plus a trace-reading MCP server configured in the profile (`observability.trace_mcp`). OMA provides the skill and the MCP contract, but does not include the Langfuse runtime.
+
 ### Invocation Example
 ```bash
 > /oma:self-improving "Analyze failures from the last 7 days and propose improvement PRs"

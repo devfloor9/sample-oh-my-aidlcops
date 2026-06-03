@@ -41,6 +41,7 @@ budgets:
 observability:
   mode: langfuse-managed      # langfuse-managed | langfuse-self-hosted | opentelemetry-only | none
   endpoint: null
+  trace_mcp: null             # { server_name: "langfuse", tools: ["mcp__langfuse__*"] } — trace 읽기 MCP 서버 (self-improving/continuous-eval/cost-governance 피드백 루프용)
 
 star_confirmed: false
 ```
@@ -64,6 +65,7 @@ star_confirmed: false
   `user-prompt-submit.sh` 의 예산 경고 임계치를 지정.
 - `observability.*` — Langfuse self-hosted 이면 `langfuse-observability` 스킬이
   endpoint 필드를 재사용.
+- `observability.trace_mcp` — (선택) agenticops 피드백 루프 스킬(`self-improving-loop`, `continuous-eval`, `cost-governance`)이 호출할 trace 읽기 MCP 서버를 등록. `null` 이면 trace 기반 피드백 비활성화. 예: `{ server_name: "langfuse", tools: ["mcp__langfuse__get_traces", "mcp__langfuse__get_sessions"] }`.
 
 ## 수동 편집
 

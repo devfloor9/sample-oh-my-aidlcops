@@ -49,6 +49,8 @@ OMA는 `agenticops` 플러그인을 통해 운영 단계에 다음 여섯 스킬
 | 스킬 | 역할 | 주요 입력 | 주요 출력 |
 |---|---|---|---|
 | `self-improving-loop` | 트레이스 기반 스킬·프롬프트 개선 | Langfuse 트레이스, 실패 패턴 | `aidlc` 플러그인 construction 스킬에 PR |
+
+**주의**: `self-improving-loop` 를 비롯한 trace 기반 피드백 루프는 외부 Langfuse 인스턴스와 trace 읽기 MCP 서버가 프로파일(`observability.trace_mcp`)에 구성되었을 때에만 동작합니다. OMA 는 스킬과 계약을 제공하며, Langfuse 런타임은 사용자가 직접 운영합니다.
 | `autopilot-deploy` | 검증된 아티팩트의 자율 배포 | CI 성공 아티팩트, 정책 게이트 | GitOps 커밋, 롤아웃 이벤트 |
 | `incident-response` | 알람 → 진단 → 제안 → 실행 | PagerDuty, CloudWatch 알람 | RCA draft, 자동 완화 조치 |
 | `continuous-eval` | 지속 품질 평가 | Ragas 메트릭, 회귀 데이터셋 | 품질 리포트, 롤백 신호 |
@@ -72,7 +74,7 @@ flowchart LR
     RT["ai-infra · 런타임 기반"] -. "EKS / vLLM / Langfuse" .-> O
 ```
 
-이 루프의 핵심은 **Operations → Construction 역방향 흐름**이 자동화된다는 점입니다. 기존 AIDLC 구현에서는 이 화살표가 인간의 이슈 분류와 백로그 관리에 의존했지만, OMA에서는 `self-improving-loop`가 트레이스 패턴을 분석해 구체적인 스킬·프롬프트 수정 PR을 생성합니다.
+이 루프의 핵심은 **Operations → Construction 역방향 흐름**이 자동화된다는 점입니다. 기존 AIDLC 구현에서는 이 화살표가 인간의 이슈 분류와 백로그 관리에 의존했지만, OMA에서는 `self-improving-loop`가 트레이스 패턴을 분석해 구체적인 스킬·프롬프트 수정 PR을 생성합니다. 단, 이 Outer Loop 는 외부 Langfuse + trace MCP 가 프로파일(`observability.trace_mcp`)에 구성되어야 닫힙니다. OMA 는 피드백 루프 스킬과 MCP 계약을 제공하지만, trace 런타임 자체는 포함하지 않습니다.
 
 ## 참조 설계 — Self-Improving Agent Loop
 

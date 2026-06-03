@@ -80,7 +80,7 @@ const WORKFLOWS: Workflow[] = [
   {
     keyword: 'self-improving',
     command: '/oma:self-improving',
-    scope: 'Langfuse traces → prompt / skill improvement PR.',
+    scope: 'Langfuse traces (via your configured trace MCP) → prompt / skill improvement PR.',
   },
   {
     keyword: 'platform-bootstrap',
@@ -110,7 +110,7 @@ const SUPERPOWERS = [
     num: '02',
     title: 'Self-improving from production traces.',
     body:
-      'Langfuse traces feed /oma:self-improving. Failure patterns become draft PRs against the skills and prompts that produced them — regression tests run before the PR is opened.',
+      'When you configure your own Langfuse + trace-reading MCP (via profile observability.trace_mcp), traces feed /oma:self-improving. Failure patterns become draft PRs against the skills and prompts that produced them — regression tests run before the PR is opened.',
   },
   {
     num: '03',
@@ -432,7 +432,7 @@ export default function HomeLanding(): React.ReactElement {
           <article className={`${styles.contrastCard} ${styles.contrastAfter}`}>
             <h3>With OMA</h3>
             <ul>
-              <li>Trace patterns open draft PRs against the skills that caused them.</li>
+              <li>Trace patterns open draft PRs against the skills that caused them (once you point OMA at your Langfuse trace MCP).</li>
               <li>SEV1 alarms get diagnosed + mitigated with a human approval gate.</li>
               <li>Budget breaches throttle or downgrade before the ceiling hits.</li>
               <li>Humans approve at checkpoints. Agents do the rest.</li>
