@@ -224,15 +224,15 @@
     "description": "Support policy link text"
   },
   "landing.hero.title_line1": {
-    "message": "AIDLC 운영 공백은",
+    "message": "AIDLC 운영은",
     "description": "Hero main title line 1"
   },
   "landing.hero.title_line2_before": {
-    "message": "여전히",
+    "message": "전문가의 승인으로",
     "description": "Hero title line 2 before accent"
   },
   "landing.hero.title_line2_accent": {
-    "message": "사람의 손입니다.",
+    "message": "완성됩니다.",
     "description": "Hero title line 2 accent text"
   },
   "landing.hero.lede": {
