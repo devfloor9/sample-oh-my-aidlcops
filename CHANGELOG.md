@@ -28,6 +28,12 @@ breaking changes to non-stable surfaces as documented in
 - **REFERENCES.** Registered the engineering-playbook AIDLC methodology
   landing page and the Ontology/Harness Engineering sub-pages as the
   canonical conceptual sources.
+- **`observability.trace_mcp` profile contract.** Optional
+  `schemas/profile/profile.schema.json` block (additive, null by default)
+  that registers a user-supplied trace-reading MCP server for the
+  agenticops feedback-loop skills. OMA ships no trace MCP and runs no
+  Langfuse — it defines the `mcp__<server_name>__*` socket; the user
+  supplies the server. Registered the Langfuse Public API in REFERENCES.
 
 ### Changed
 - **Repositioning.** README (en/ko), docs intro, philosophy, and the
@@ -45,6 +51,14 @@ breaking changes to non-stable surfaces as documented in
   enterprise operations automation.
 
 ### Fixed
+- **Self-improving loop honesty.** The landing page and docs implied OMA
+  turns Langfuse traces into improvement PRs out of the box. OMA ships the
+  skills and the MCP contract, not the Langfuse runtime — docs (landing,
+  intro, philosophy, profile, tier-0; ko + en) now state the loop closes
+  only when an external Langfuse + trace MCP is configured. The three
+  agenticops skills no longer shell out to `curl` with Langfuse secrets or
+  call an undefined `fetch_langfuse_traces()`; they consume
+  `mcp__<server_name>__*` and degrade gracefully when unconfigured.
 - **Broken philosophy/ontology Mermaid diagrams.** Unquoted labels (the
   `(6R)` edge label aborted the entire flowchart parse) now quoted per the
   diagram-authoring standard; the English philosophy diagram, which had
