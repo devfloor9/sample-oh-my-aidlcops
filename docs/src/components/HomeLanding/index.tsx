@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Translate, { translate } from '@docusaurus/Translate';
 import styles from './styles.module.css';
 
 type Plugin = {
@@ -13,33 +14,65 @@ type Plugin = {
 const PLUGINS: Plugin[] = [
   {
     name: 'ai-infra',
-    tagline: 'Build the runtime.',
-    scope:
-      'AI runtime infrastructure on AWS. Ships EKS + vLLM + Inference Gateway + Langfuse + GPU + guardrails today; Bedrock / SageMaker runtime skills planned. MCP servers pinned to exact PyPI versions — no @latest.',
+    tagline: translate({
+      id: 'landing.plugin.ai_infra.tagline',
+      message: 'Build the runtime.',
+      description: 'Tagline for ai-infra plugin',
+    }),
+    scope: translate({
+      id: 'landing.plugin.ai_infra.scope',
+      message:
+        'AI runtime infrastructure on AWS. Ships EKS + vLLM + Inference Gateway + Langfuse + GPU + guardrails today; Bedrock / SageMaker runtime skills planned. MCP servers pinned to exact PyPI versions — no @latest.',
+      description: 'Description of ai-infra plugin scope',
+    }),
     skills:
       'agentic-eks-bootstrap · vllm-serving-setup · inference-gateway-routing · langfuse-observability · gpu-resource-management · ai-gateway-guardrails',
   },
   {
     name: 'aidlc',
-    tagline: 'Design and build with a spec.',
-    scope:
-      'AIDLC Phase 1 (Inception) + Phase 2 (Construction) opt-in extensions for awslabs/aidlc-workflows. Inception captures workspace, requirements, stories, and the workflow plan. Construction turns that plan into components, code, tests, and risk-discovered quality gates.',
+    tagline: translate({
+      id: 'landing.plugin.aidlc.tagline',
+      message: 'Design and build with a spec.',
+      description: 'Tagline for aidlc plugin',
+    }),
+    scope: translate({
+      id: 'landing.plugin.aidlc.scope',
+      message:
+        'AIDLC Phase 1 (Inception) + Phase 2 (Construction) opt-in extensions for awslabs/aidlc-workflows. Inception captures workspace, requirements, stories, and the workflow plan. Construction turns that plan into components, code, tests, and risk-discovered quality gates.',
+      description: 'Description of aidlc plugin scope',
+    }),
     skills:
       'workspace-detection · requirements-analysis · user-stories · workflow-planning · component-design · code-generation · test-strategy · risk-discovery · quality-gates',
   },
   {
     name: 'agenticops',
-    tagline: 'Operate with agents.',
-    scope:
-      'Autonomous operations for production agentic workloads. Incident response, self-improving feedback loops, progressive rollouts with SLO circuit breakers, cost governance with a simpleeval sandbox, and verbatim audit trails.',
+    tagline: translate({
+      id: 'landing.plugin.agenticops.tagline',
+      message: 'Operate with agents.',
+      description: 'Tagline for agenticops plugin',
+    }),
+    scope: translate({
+      id: 'landing.plugin.agenticops.scope',
+      message:
+        'Autonomous operations for production agentic workloads. Incident response, self-improving feedback loops, progressive rollouts with SLO circuit breakers, cost governance with a simpleeval sandbox, and verbatim audit trails.',
+      description: 'Description of agenticops plugin scope',
+    }),
     skills:
       'self-improving-loop · autopilot-deploy · incident-response · continuous-eval · cost-governance · audit-trail',
   },
   {
     name: 'modernization',
-    tagline: 'Lift legacy onto AWS.',
-    scope:
-      'Brownfield legacy workload modernization using the AWS 6R strategy. Workload assessment with Five Lenses, 6R decision matrix, to-be architecture, containerization hardening, and production cutover planning with rollback triggers.',
+    tagline: translate({
+      id: 'landing.plugin.modernization.tagline',
+      message: 'Lift legacy onto AWS.',
+      description: 'Tagline for modernization plugin',
+    }),
+    scope: translate({
+      id: 'landing.plugin.modernization.scope',
+      message:
+        'Brownfield legacy workload modernization using the AWS 6R strategy. Workload assessment with Five Lenses, 6R decision matrix, to-be architecture, containerization hardening, and production cutover planning with rollback triggers.',
+      description: 'Description of modernization plugin scope',
+    }),
     skills:
       'workload-assessment · modernization-strategy · to-be-architecture · containerization · cutover-planning',
   },
@@ -55,68 +88,128 @@ const WORKFLOWS: Workflow[] = [
   {
     keyword: 'autopilot',
     command: '/oma:autopilot',
-    scope: 'Full AIDLC loop (Inception → Construction → Operations).',
+    scope: translate({
+      id: 'landing.workflow.autopilot.scope',
+      message: 'Full AIDLC loop (Inception → Construction → Operations).',
+      description: 'Description of autopilot workflow',
+    }),
   },
   {
     keyword: 'aidlc-loop',
     command: '/oma:aidlc-loop',
-    scope: 'Single-feature Inception → Construction pass.',
+    scope: translate({
+      id: 'landing.workflow.aidlc_loop.scope',
+      message: 'Single-feature Inception → Construction pass.',
+      description: 'Description of aidlc-loop workflow',
+    }),
   },
   {
     keyword: 'inception',
     command: '/oma:inception',
-    scope: 'AIDLC Phase 1 only — spec, stories, workflow plan.',
+    scope: translate({
+      id: 'landing.workflow.inception.scope',
+      message: 'AIDLC Phase 1 only — spec, stories, workflow plan.',
+      description: 'Description of inception workflow',
+    }),
   },
   {
     keyword: 'construction',
     command: '/oma:construction',
-    scope: 'AIDLC Phase 2 only — design, codegen, agentic TDD.',
+    scope: translate({
+      id: 'landing.workflow.construction.scope',
+      message: 'AIDLC Phase 2 only — design, codegen, agentic TDD.',
+      description: 'Description of construction workflow',
+    }),
   },
   {
     keyword: 'agenticops',
     command: '/oma:agenticops',
-    scope: 'Operations mode: continuous-eval + incident-response + cost-governance.',
+    scope: translate({
+      id: 'landing.workflow.agenticops.scope',
+      message: 'Operations mode: continuous-eval + incident-response + cost-governance.',
+      description: 'Description of agenticops workflow',
+    }),
   },
   {
     keyword: 'self-improving',
     command: '/oma:self-improving',
-    scope: 'Langfuse traces (via your configured trace MCP) → prompt / skill improvement PR.',
+    scope: translate({
+      id: 'landing.workflow.self_improving.scope',
+      message: 'Langfuse traces (via your configured trace MCP) → prompt / skill improvement PR.',
+      description: 'Description of self-improving workflow',
+    }),
   },
   {
     keyword: 'platform-bootstrap',
     command: '/oma:platform-bootstrap',
-    scope: '5-checkpoint Agentic AI Platform bootstrap on EKS.',
+    scope: translate({
+      id: 'landing.workflow.platform_bootstrap.scope',
+      message: '5-checkpoint Agentic AI Platform bootstrap on EKS.',
+      description: 'Description of platform-bootstrap workflow',
+    }),
   },
   {
     keyword: 'modernize',
     command: '/oma:modernize',
-    scope: '6-stage brownfield modernization (assessment → cutover).',
+    scope: translate({
+      id: 'landing.workflow.modernize.scope',
+      message: '6-stage brownfield modernization (assessment → cutover).',
+      description: 'Description of modernize workflow',
+    }),
   },
   {
     keyword: 'cancel',
     command: '/oma:cancel',
-    scope: 'Terminate the active Tier-0 mode.',
+    scope: translate({
+      id: 'landing.workflow.cancel.scope',
+      message: 'Terminate the active Tier-0 mode.',
+      description: 'Description of cancel workflow',
+    }),
   },
 ];
 
 const SUPERPOWERS = [
   {
     num: '01',
-    title: 'One command, entire lifecycle.',
-    body:
-      'Spec → design → code → canary deploy → self-healing → cost attribution. /oma:autopilot drives the whole loop and pauses only at explicit approval checkpoints.',
+    title: translate({
+      id: 'landing.superpower.1.title',
+      message: 'One command, entire lifecycle.',
+      description: 'Title for superpower 1',
+    }),
+    body: translate({
+      id: 'landing.superpower.1.body',
+      message:
+        'Spec → design → code → canary deploy → self-healing → cost attribution. /oma:autopilot drives the whole loop and pauses only at explicit approval checkpoints.',
+      description: 'Body text for superpower 1',
+    }),
   },
   {
     num: '02',
-    title: 'Self-improving from production traces.',
-    body:
-      'When you configure your own Langfuse + trace-reading MCP (via profile observability.trace_mcp), traces feed /oma:self-improving. Failure patterns become draft PRs against the skills and prompts that produced them — regression tests run before the PR is opened.',
+    title: translate({
+      id: 'landing.superpower.2.title',
+      message: 'Self-improving from production traces.',
+      description: 'Title for superpower 2',
+    }),
+    body: translate({
+      id: 'landing.superpower.2.body',
+      message:
+        'When you configure your own Langfuse + trace-reading MCP (via profile observability.trace_mcp), traces feed /oma:self-improving. Failure patterns become draft PRs against the skills and prompts that produced them — regression tests run before the PR is opened.',
+      description: 'Body text for superpower 2',
+    }),
   },
   {
     num: '03',
-    title: 'Humans approve. Agents execute.',
-    body:
-      'Every Tier-0 workflow sandwiches agent-driven diagnosis, proposal, and execution between explicit human gates. The agent never silently mutates production.',
+    title: translate({
+      id: 'landing.superpower.3.title',
+      message: 'Humans approve. Agents execute.',
+      description: 'Title for superpower 3',
+    }),
+    body: translate({
+      id: 'landing.superpower.3.body',
+      message:
+        'Every Tier-0 workflow sandwiches agent-driven diagnosis, proposal, and execution between explicit human gates. The agent never silently mutates production.',
+      description: 'Body text for superpower 3',
+    }),
   },
 ];
 
@@ -131,31 +224,79 @@ type Capability = {
 
 const CAPABILITIES: Capability[] = [
   {
-    title: 'Autopilot deploys',
-    body:
-      'autopilot-deploy runs canary 1% → 10% → 50% → 100% with SLO-gated circuit breakers. Each stage waits for continuous-eval before promotion; regression trips auto-rollback.',
+    title: translate({
+      id: 'landing.capability.autopilot.title',
+      message: 'Autopilot deploys',
+      description: 'Title for autopilot deploys capability',
+    }),
+    body: translate({
+      id: 'landing.capability.autopilot.body',
+      message:
+        'autopilot-deploy runs canary 1% → 10% → 50% → 100% with SLO-gated circuit breakers. Each stage waits for continuous-eval before promotion; regression trips auto-rollback.',
+      description: 'Body text for autopilot deploys capability',
+    }),
     icon: 'rocket',
     variant: 'wide',
-    bullets: ['Argo Rollouts / Flagger', 'Prometheus SLO gates', 'Human approval at 100%'],
+    bullets: [
+      translate({
+        id: 'landing.capability.autopilot.bullet1',
+        message: 'Argo Rollouts / Flagger',
+        description: 'First bullet for autopilot deploys',
+      }),
+      translate({
+        id: 'landing.capability.autopilot.bullet2',
+        message: 'Prometheus SLO gates',
+        description: 'Second bullet for autopilot deploys',
+      }),
+      translate({
+        id: 'landing.capability.autopilot.bullet3',
+        message: 'Human approval at 100%',
+        description: 'Third bullet for autopilot deploys',
+      }),
+    ],
   },
   {
-    title: 'Self-healing',
-    body:
-      'incident-response classifies SEV1–4, pulls the matching runbook, issues diagnostic MCP queries, and drafts a remediation script for approval. SEV1 pages on-call; it never acts.',
+    title: translate({
+      id: 'landing.capability.self_healing.title',
+      message: 'Self-healing',
+      description: 'Title for self-healing capability',
+    }),
+    body: translate({
+      id: 'landing.capability.self_healing.body',
+      message:
+        'incident-response classifies SEV1–4, pulls the matching runbook, issues diagnostic MCP queries, and drafts a remediation script for approval. SEV1 pages on-call; it never acts.',
+      description: 'Body text for self-healing capability',
+    }),
     icon: 'shield',
     variant: 'accent',
   },
   {
-    title: 'Cost governance',
-    body:
-      'cost-governance attributes spend per agent, vetoes deploys that would breach the monthly ceiling, and drafts Opus → Sonnet → Haiku downgrade PRs. budget.yaml runs in a simpleeval sandbox — no Python eval, no RCE vector.',
+    title: translate({
+      id: 'landing.capability.cost_governance.title',
+      message: 'Cost governance',
+      description: 'Title for cost governance capability',
+    }),
+    body: translate({
+      id: 'landing.capability.cost_governance.body',
+      message:
+        'cost-governance attributes spend per agent, vetoes deploys that would breach the monthly ceiling, and drafts Opus → Sonnet → Haiku downgrade PRs. budget.yaml runs in a simpleeval sandbox — no Python eval, no RCE vector.',
+      description: 'Body text for cost governance capability',
+    }),
     icon: 'coin',
     variant: 'quiet',
   },
   {
-    title: 'CLI first. Always.',
-    body:
-      'Every skill is reachable as a slash command in Claude Code or a direct skill call in Kiro. The full state lives under .omao/ and is portable between harnesses.',
+    title: translate({
+      id: 'landing.capability.cli_first.title',
+      message: 'CLI first. Always.',
+      description: 'Title for CLI first capability',
+    }),
+    body: translate({
+      id: 'landing.capability.cli_first.body',
+      message:
+        'Every skill is reachable as a slash command in Claude Code or a direct skill call in Kiro. The full state lives under .omao/ and is portable between harnesses.',
+      description: 'Body text for CLI first capability',
+    }),
     icon: 'terminal',
     variant: 'terminal',
     code: [
@@ -170,45 +311,114 @@ const CAPABILITIES: Capability[] = [
 
 const INTEGRATIONS = [
   {
-    title: 'Claude Code plugin',
+    title: translate({
+      id: 'landing.integration.claude_code.title',
+      message: 'Claude Code plugin',
+      description: 'Title for Claude Code integration',
+    }),
     icon: 'plug',
-    body:
-      'Ship as a native Claude Code marketplace entry. Slash commands, keyword triggers, and the AWS hosted MCP layer work out of the box.',
+    body: translate({
+      id: 'landing.integration.claude_code.body',
+      message:
+        'Ship as a native Claude Code marketplace entry. Slash commands, keyword triggers, and the AWS hosted MCP layer work out of the box.',
+      description: 'Body text for Claude Code integration',
+    }),
   },
   {
-    title: 'Kiro skills',
+    title: translate({
+      id: 'landing.integration.kiro.title',
+      message: 'Kiro skills',
+      description: 'Title for Kiro integration',
+    }),
     icon: 'spark',
-    body:
-      'install/kiro.sh symlinks every skill into ~/.kiro/skills/ and wires kiro-agents profiles with pinned MCP server versions.',
+    body: translate({
+      id: 'landing.integration.kiro.body',
+      message:
+        'install/kiro.sh symlinks every skill into ~/.kiro/skills/ and wires kiro-agents profiles with pinned MCP server versions.',
+      description: 'Body text for Kiro integration',
+    }),
   },
   {
-    title: 'Shared .omao state',
+    title: translate({
+      id: 'landing.integration.shared_state.title',
+      message: 'Shared .omao state',
+      description: 'Title for shared state integration',
+    }),
     icon: 'layers',
-    body:
-      'Tier-0 mode, project memory, and audit logs live in .omao/. Both harnesses read and write the same directory — switch without losing context.',
+    body: translate({
+      id: 'landing.integration.shared_state.body',
+      message:
+        'Tier-0 mode, project memory, and audit logs live in .omao/. Both harnesses read and write the same directory — switch without losing context.',
+      description: 'Body text for shared state integration',
+    }),
   },
 ];
 
 const FAQ = [
   {
-    q: 'What does "Tech Preview" mean for this repo?',
-    a: 'profile.yaml v1 and the 8 ontology schemas are stable; CLI surfaces and the doctor report shape may still evolve before GA. Breaking changes land in CHANGELOG under an explicit "Breaking" heading. See the support policy for the full stability contract.',
+    q: translate({
+      id: 'landing.faq.q1.q',
+      message: 'What does "Tech Preview" mean for this repo?',
+      description: 'FAQ question 1',
+    }),
+    a: translate({
+      id: 'landing.faq.q1.a',
+      message:
+        'profile.yaml v1 and the 8 ontology schemas are stable; CLI surfaces and the doctor report shape may still evolve before GA. Breaking changes land in CHANGELOG under an explicit "Breaking" heading. See the support policy for the full stability contract.',
+      description: 'FAQ answer 1',
+    }),
   },
   {
-    q: 'Do I have to use both Claude Code and Kiro?',
-    a: 'No. Pick one. The plugin directory, skills, and MCP server pinning are identical across harnesses; only the install script differs. The .omao/ state directory is harness-agnostic, so you can switch later without losing work.',
+    q: translate({
+      id: 'landing.faq.q2.q',
+      message: 'Do I have to use both Claude Code and Kiro?',
+      description: 'FAQ question 2',
+    }),
+    a: translate({
+      id: 'landing.faq.q2.a',
+      message:
+        'No. Pick one. The plugin directory, skills, and MCP server pinning are identical across harnesses; only the install script differs. The .omao/ state directory is harness-agnostic, so you can switch later without losing work.',
+      description: 'FAQ answer 2',
+    }),
   },
   {
-    q: 'What AWS permissions do I need to run the default workflows?',
-    a: 'The EKS MCP server runs read-only by default (no --allow-write). /oma:platform-bootstrap needs eks:*, ec2:*, and iam:CreateRole against your cluster account. /oma:agenticops reads CloudWatch, Prometheus, and Cost Explorer. No credentials are collected or sent anywhere beyond your shell.',
+    q: translate({
+      id: 'landing.faq.q3.q',
+      message: 'What AWS permissions do I need to run the default workflows?',
+      description: 'FAQ question 3',
+    }),
+    a: translate({
+      id: 'landing.faq.q3.a',
+      message:
+        'The EKS MCP server runs read-only by default (no --allow-write). /oma:platform-bootstrap needs eks:*, ec2:*, and iam:CreateRole against your cluster account. /oma:agenticops reads CloudWatch, Prometheus, and Cost Explorer. No credentials are collected or sent anywhere beyond your shell.',
+      description: 'FAQ answer 3',
+    }),
   },
   {
-    q: 'How does OMA relate to awslabs/aidlc-workflows?',
-    a: 'OMA consumes aidlc-workflows as the core AIDLC spec and contributes only *.opt-in.md extension files into it. We do not fork the core workflow. scripts/install/aidlc-extensions.sh clones it at runtime and symlinks our opt-in overlays.',
+    q: translate({
+      id: 'landing.faq.q4.q',
+      message: 'How does OMA relate to awslabs/aidlc-workflows?',
+      description: 'FAQ question 4',
+    }),
+    a: translate({
+      id: 'landing.faq.q4.a',
+      message:
+        'OMA consumes aidlc-workflows as the core AIDLC spec and contributes only *.opt-in.md extension files into it. We do not fork the core workflow. scripts/install/aidlc-extensions.sh clones it at runtime and symlinks our opt-in overlays.',
+      description: 'FAQ answer 4',
+    }),
   },
   {
-    q: 'What happens to cost when I turn on /oma:agenticops?',
-    a: 'cost-governance attributes spend per agent and enforces a monthly ceiling via Budget.action_on_breach. When the ceiling is in reach it drafts model-downgrade PRs (Opus → Sonnet → Haiku) and vetoes deploys until approved. No autonomous scaling happens without an explicit approval chain.',
+    q: translate({
+      id: 'landing.faq.q5.q',
+      message: 'What happens to cost when I turn on /oma:agenticops?',
+      description: 'FAQ question 5',
+    }),
+    a: translate({
+      id: 'landing.faq.q5.a',
+      message:
+        'cost-governance attributes spend per agent and enforces a monthly ceiling via Budget.action_on_breach. When the ceiling is in reach it drafts model-downgrade PRs (Opus → Sonnet → Haiku) and vetoes deploys until approved. No autonomous scaling happens without an explicit approval chain.',
+      description: 'FAQ answer 5',
+    }),
   },
 ];
 
@@ -320,28 +530,54 @@ export default function HomeLanding(): React.ReactElement {
           <div className={styles.heroCopy}>
             <div className={styles.eyebrow}>
               <span className={styles.eyebrowDot} aria-hidden="true" />
-              aws-samples · AIDLC × AgenticOps
+              <Translate id="landing.hero.eyebrow" description="Hero eyebrow text">
+                aws-samples · AIDLC × AgenticOps
+              </Translate>
             </div>
             <div className={styles.previewBadge} role="note">
-              <span className={styles.previewBadgeLabel}>Tech Preview</span>
+              <span className={styles.previewBadgeLabel}>
+                <Translate id="landing.hero.preview_badge" description="Tech preview badge label">
+                  Tech Preview
+                </Translate>
+              </span>
               <span className={styles.previewBadgeText}>
-                v0.4.0-preview.1 — schemas &amp; DSL may change before GA. See the{' '}
-                <Link to={useBaseUrl('/docs/support-policy')}>support policy</Link>.
+                <Translate id="landing.hero.preview_text" description="Tech preview description text">
+                  v0.4.0-preview.1 — schemas &amp; DSL may change before GA. See the
+                </Translate>{' '}
+                <Link to={useBaseUrl('/docs/support-policy')}>
+                  <Translate id="landing.hero.support_policy_link" description="Support policy link text">
+                    support policy
+                  </Translate>
+                </Link>.
               </span>
             </div>
             <h1 className={styles.heroTitle}>
-              The AIDLC operations gap<br />
-              is still <span className={styles.accent}>human glue.</span>
+              <Translate id="landing.hero.title_line1" description="Hero main title line 1">
+                The AIDLC operations gap
+              </Translate>
+              <br />
+              <Translate id="landing.hero.title_line2_before" description="Hero title line 2 before accent">
+                is still
+              </Translate>{' '}
+              <span className={styles.accent}>
+                <Translate id="landing.hero.title_line2_accent" description="Hero title line 2 accent text">
+                  human glue.
+                </Translate>
+              </span>
             </h1>
             <p className={styles.heroLede}>
-              AIDLC automates design and construction. Operations — deploys, incidents, cost
-              drift, regressions — still fall on the team. OMA is the plugin marketplace that
-              closes the loop with AgenticOps: humans approve, agents execute everything
-              between the checkpoints.
+              <Translate id="landing.hero.lede" description="Hero lead paragraph">
+                AIDLC automates design and construction. Operations — deploys, incidents, cost
+                drift, regressions — still fall on the team. OMA is the plugin marketplace that
+                closes the loop with AgenticOps: humans approve, agents execute everything
+                between the checkpoints.
+              </Translate>
             </p>
             <div className={styles.heroCtaRow}>
               <Link className={styles.ctaPrimary} to={useBaseUrl('/docs/getting-started')}>
-                Install in 30 seconds
+                <Translate id="landing.hero.cta_primary" description="Primary CTA button text">
+                  Install in 30 seconds
+                </Translate>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -352,25 +588,51 @@ export default function HomeLanding(): React.ReactElement {
                 target="_blank"
                 rel="noreferrer"
               >
-                Star on GitHub
+                <Translate id="landing.hero.cta_secondary" description="Secondary CTA button text">
+                  Star on GitHub
+                </Translate>
               </a>
             </div>
             <dl className={styles.heroStats}>
               <div>
-                <dt>Plugins</dt>
+                <dt>
+                  <Translate id="landing.hero.stat1_label" description="Stat 1 label">
+                    Plugins
+                  </Translate>
+                </dt>
                 <dd>4</dd>
               </div>
               <div>
-                <dt>Tier-0 workflows</dt>
+                <dt>
+                  <Translate id="landing.hero.stat2_label" description="Stat 2 label">
+                    Tier-0 workflows
+                  </Translate>
+                </dt>
                 <dd>9</dd>
               </div>
               <div>
-                <dt>AWS MCP servers</dt>
-                <dd>11 pinned</dd>
+                <dt>
+                  <Translate id="landing.hero.stat3_label" description="Stat 3 label">
+                    AWS MCP servers
+                  </Translate>
+                </dt>
+                <dd>
+                  <Translate id="landing.hero.stat3_value" description="Stat 3 value">
+                    11 pinned
+                  </Translate>
+                </dd>
               </div>
               <div>
-                <dt>Ontology entities</dt>
-                <dd>8 schemas</dd>
+                <dt>
+                  <Translate id="landing.hero.stat4_label" description="Stat 4 label">
+                    Ontology entities
+                  </Translate>
+                </dt>
+                <dd>
+                  <Translate id="landing.hero.stat4_value" description="Stat 4 value">
+                    8 schemas
+                  </Translate>
+                </dd>
               </div>
             </dl>
           </div>
@@ -400,8 +662,10 @@ export default function HomeLanding(): React.ReactElement {
                   &gt; /oma:autopilot <em>"ship the anomaly detector end to end"</em>
                 </p>
                 <div className={styles.mockCallout}>
-                  OMA · Inception → Construction → Operations.
-                  Approval gates: 4. Agent steps in between: ~40.
+                  <Translate id="landing.hero.mock_callout" description="Hero mock terminal callout text">
+                    OMA · Inception → Construction → Operations.
+                    Approval gates: 4. Agent steps in between: ~40.
+                  </Translate>
                 </div>
               </div>
             </div>
@@ -414,28 +678,74 @@ export default function HomeLanding(): React.ReactElement {
       {/* PROBLEM -> SOLUTION CONTRAST */}
       <section className={styles.contrast}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>The gap</p>
+          <p className={styles.kicker}>
+            <Translate id="landing.contrast.kicker" description="Contrast section kicker">
+              The gap
+            </Translate>
+          </p>
           <h2 className={styles.sectionTitle}>
-            Most AIDLC implementations stop at merge time.
+            <Translate id="landing.contrast.title" description="Contrast section title">
+              Most AIDLC implementations stop at merge time.
+            </Translate>
           </h2>
         </header>
         <div className={styles.contrastGrid}>
           <article className={`${styles.contrastCard} ${styles.contrastBefore}`}>
-            <h3>Without OMA</h3>
+            <h3>
+              <Translate id="landing.contrast.without_title" description="Without OMA heading">
+                Without OMA
+              </Translate>
+            </h3>
             <ul>
-              <li>Traces pile up in Langfuse but never become PRs.</li>
-              <li>Incident playbooks live in a wiki no on-call reads at 2am.</li>
-              <li>Cost anomalies surface on the next month's invoice.</li>
-              <li>Every operations decision is a human judgement call.</li>
+              <li>
+                <Translate id="landing.contrast.without_bullet1" description="Without OMA bullet 1">
+                  Traces pile up in Langfuse but never become PRs.
+                </Translate>
+              </li>
+              <li>
+                <Translate id="landing.contrast.without_bullet2" description="Without OMA bullet 2">
+                  Incident playbooks live in a wiki no on-call reads at 2am.
+                </Translate>
+              </li>
+              <li>
+                <Translate id="landing.contrast.without_bullet3" description="Without OMA bullet 3">
+                  Cost anomalies surface on the next month's invoice.
+                </Translate>
+              </li>
+              <li>
+                <Translate id="landing.contrast.without_bullet4" description="Without OMA bullet 4">
+                  Every operations decision is a human judgement call.
+                </Translate>
+              </li>
             </ul>
           </article>
           <article className={`${styles.contrastCard} ${styles.contrastAfter}`}>
-            <h3>With OMA</h3>
+            <h3>
+              <Translate id="landing.contrast.with_title" description="With OMA heading">
+                With OMA
+              </Translate>
+            </h3>
             <ul>
-              <li>Trace patterns open draft PRs against the skills that caused them (once you point OMA at your Langfuse trace MCP).</li>
-              <li>SEV1 alarms get diagnosed + mitigated with a human approval gate.</li>
-              <li>Budget breaches throttle or downgrade before the ceiling hits.</li>
-              <li>Humans approve at checkpoints. Agents do the rest.</li>
+              <li>
+                <Translate id="landing.contrast.with_bullet1" description="With OMA bullet 1">
+                  Trace patterns open draft PRs against the skills that caused them (once you point OMA at your Langfuse trace MCP).
+                </Translate>
+              </li>
+              <li>
+                <Translate id="landing.contrast.with_bullet2" description="With OMA bullet 2">
+                  SEV1 alarms get diagnosed + mitigated with a human approval gate.
+                </Translate>
+              </li>
+              <li>
+                <Translate id="landing.contrast.with_bullet3" description="With OMA bullet 3">
+                  Budget breaches throttle or downgrade before the ceiling hits.
+                </Translate>
+              </li>
+              <li>
+                <Translate id="landing.contrast.with_bullet4" description="With OMA bullet 4">
+                  Humans approve at checkpoints. Agents do the rest.
+                </Translate>
+              </li>
             </ul>
           </article>
         </div>
@@ -444,9 +754,15 @@ export default function HomeLanding(): React.ReactElement {
       {/* SUPERPOWERS */}
       <section className={styles.superpowers}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>What changes</p>
+          <p className={styles.kicker}>
+            <Translate id="landing.superpowers.kicker" description="Superpowers section kicker">
+              What changes
+            </Translate>
+          </p>
           <h2 className={styles.sectionTitle}>
-            Three mechanisms that make AIDLC close itself.
+            <Translate id="landing.superpowers.title" description="Superpowers section title">
+              Three mechanisms that make AIDLC close itself.
+            </Translate>
           </h2>
         </header>
         <ol className={styles.superpowerList}>
@@ -465,9 +781,15 @@ export default function HomeLanding(): React.ReactElement {
       {/* INTEGRATION */}
       <section className={styles.integration}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>Drop-in</p>
+          <p className={styles.kicker}>
+            <Translate id="landing.integration.kicker" description="Integration section kicker">
+              Drop-in
+            </Translate>
+          </p>
           <h2 className={styles.sectionTitle}>
-            Ship as a plugin inside the tools you already run.
+            <Translate id="landing.integration.title" description="Integration section title">
+              Ship as a plugin inside the tools you already run.
+            </Translate>
           </h2>
         </header>
         <div className={styles.integrationGrid}>
@@ -487,47 +809,89 @@ export default function HomeLanding(): React.ReactElement {
       <section className={styles.loopSection}>
         <div className={styles.loopCard}>
           <div className={styles.loopCopy}>
-            <h2 className={styles.sectionTitleTight}>The AIDLC loop, closed.</h2>
+            <h2 className={styles.sectionTitleTight}>
+              <Translate id="landing.loop.title" description="AIDLC loop section title">
+                The AIDLC loop, closed.
+              </Translate>
+            </h2>
             <p className={styles.loopLede}>
-              Inception and Construction describe <em>what</em> will ship. Operations keeps it
-              alive after it ships — and feeds learnings back to Construction without a human
-              in the loop for routine corrections.
+              <Translate id="landing.loop.lede_before_em" description="AIDLC loop lead paragraph before emphasis">
+                Inception and Construction describe
+              </Translate>{' '}
+              <em>
+                <Translate id="landing.loop.lede_em" description="AIDLC loop lead paragraph emphasis">
+                  what
+                </Translate>
+              </em>{' '}
+              <Translate id="landing.loop.lede_after_em" description="AIDLC loop lead paragraph after emphasis">
+                will ship. Operations keeps it alive after it ships — and feeds learnings back to Construction without a human in the loop for routine corrections.
+              </Translate>
             </p>
             <ol className={styles.loopList}>
               <li>
                 <span className={styles.loopStep}>1</span>
                 <div>
-                  <h4>Inception · <code>aidlc</code></h4>
+                  <h4>
+                    <Translate id="landing.loop.step1_title" description="Loop step 1 title">
+                      Inception
+                    </Translate>{' · '}
+                    <code>aidlc</code>
+                  </h4>
                   <p>
-                    Workspace detection, adaptive requirements, user stories, workflow plan.
-                    Output artifacts become the contract Construction must honor.
+                    <Translate id="landing.loop.step1_body" description="Loop step 1 body">
+                      Workspace detection, adaptive requirements, user stories, workflow plan.
+                      Output artifacts become the contract Construction must honor.
+                    </Translate>
                   </p>
                 </div>
               </li>
               <li>
                 <span className={styles.loopStep}>2</span>
                 <div>
-                  <h4>Construction · <code>aidlc</code></h4>
+                  <h4>
+                    <Translate id="landing.loop.step2_title" description="Loop step 2 title">
+                      Construction
+                    </Translate>{' · '}
+                    <code>aidlc</code>
+                  </h4>
                   <p>
-                    Component design, code generation with human-approved gates, 12-category
-                    risk discovery, TDD for agentic systems, phase quality gates.
+                    <Translate id="landing.loop.step2_body" description="Loop step 2 body">
+                      Component design, code generation with human-approved gates, 12-category
+                      risk discovery, TDD for agentic systems, phase quality gates.
+                    </Translate>
                   </p>
                 </div>
               </li>
               <li>
                 <span className={styles.loopStep}>3</span>
                 <div>
-                  <h4>Operations · <code>agenticops</code></h4>
+                  <h4>
+                    <Translate id="landing.loop.step3_title" description="Loop step 3 title">
+                      Operations
+                    </Translate>{' · '}
+                    <code>agenticops</code>
+                  </h4>
                   <p>
-                    Autopilot deploys, continuous eval, incident response, cost governance, and
-                    the self-improving loop that feeds learnings back into Construction.
+                    <Translate id="landing.loop.step3_body" description="Loop step 3 body">
+                      Autopilot deploys, continuous eval, incident response, cost governance, and
+                      the self-improving loop that feeds learnings back into Construction.
+                    </Translate>
                   </p>
                 </div>
               </li>
             </ol>
             <p className={styles.loopFoot}>
-              Runtime (<code>ai-infra</code>) and brownfield entry (<code>modernization</code>)
-              sit alongside the loop, not inside it.
+              <Translate id="landing.loop.footer_before_ai_infra" description="AIDLC loop footer before ai-infra">
+                Runtime (
+              </Translate>
+              <code>ai-infra</code>
+              <Translate id="landing.loop.footer_between" description="AIDLC loop footer between code blocks">
+                ) and brownfield entry (
+              </Translate>
+              <code>modernization</code>
+              <Translate id="landing.loop.footer_after_modernization" description="AIDLC loop footer after modernization">
+                ) sit alongside the loop, not inside it.
+              </Translate>
             </p>
           </div>
           <div className={styles.loopVisual} aria-hidden="true">
@@ -568,8 +932,16 @@ export default function HomeLanding(): React.ReactElement {
       {/* CAPABILITIES */}
       <section className={styles.capabilities}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>AgenticOps capabilities</p>
-          <h2 className={styles.sectionTitle}>Purpose-built for the autonomous era.</h2>
+          <p className={styles.kicker}>
+            <Translate id="landing.capabilities.kicker" description="Capabilities section kicker">
+              AgenticOps capabilities
+            </Translate>
+          </p>
+          <h2 className={styles.sectionTitle}>
+            <Translate id="landing.capabilities.title" description="Capabilities section title">
+              Purpose-built for the autonomous era.
+            </Translate>
+          </h2>
         </header>
         <div className={styles.bento}>
           {CAPABILITIES.map((cap) => (
@@ -609,9 +981,15 @@ export default function HomeLanding(): React.ReactElement {
       {/* TIER-0 WORKFLOWS */}
       <section className={styles.workflows}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>Nine Tier-0 workflows</p>
+          <p className={styles.kicker}>
+            <Translate id="landing.workflows.kicker" description="Workflows section kicker">
+              Nine Tier-0 workflows
+            </Translate>
+          </p>
           <h2 className={styles.sectionTitle}>
-            Call one slash command. Get a checkpointed plan.
+            <Translate id="landing.workflows.title" description="Workflows section title">
+              Call one slash command. Get a checkpointed plan.
+            </Translate>
           </h2>
         </header>
         <div className={styles.workflowGrid}>
@@ -624,17 +1002,29 @@ export default function HomeLanding(): React.ReactElement {
           ))}
         </div>
         <p className={styles.workflowFoot}>
-          Keyword triggers auto-suggest the right command when your prompt contains a match.
-          See the <Link to={useBaseUrl('/docs/keyword-triggers')}>trigger catalog</Link>.
+          <Translate id="landing.workflows.footer" description="Workflows footer text">
+            Keyword triggers auto-suggest the right command when your prompt contains a match. See the
+          </Translate>{' '}
+          <Link to={useBaseUrl('/docs/keyword-triggers')}>
+            <Translate id="landing.workflows.trigger_catalog_link" description="Trigger catalog link text">
+              trigger catalog
+            </Translate>
+          </Link>.
         </p>
       </section>
 
       {/* PLUGINS */}
       <section className={styles.plugins}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>Four plugins</p>
+          <p className={styles.kicker}>
+            <Translate id="landing.plugins.kicker" description="Plugins section kicker">
+              Four plugins
+            </Translate>
+          </p>
           <h2 className={styles.sectionTitle}>
-            Install only what you need — or all four with one marketplace command.
+            <Translate id="landing.plugins.title" description="Plugins section title">
+              Install only what you need — or all four with one marketplace command.
+            </Translate>
           </h2>
         </header>
         <div className={styles.pluginGrid}>
@@ -654,14 +1044,26 @@ export default function HomeLanding(): React.ReactElement {
       {/* INSTALL */}
       <section className={styles.install}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>30-second install</p>
-          <h2 className={styles.sectionTitle}>Three terminal lines to a working loop.</h2>
+          <p className={styles.kicker}>
+            <Translate id="landing.install.kicker" description="Install section kicker">
+              30-second install
+            </Translate>
+          </p>
+          <h2 className={styles.sectionTitle}>
+            <Translate id="landing.install.title" description="Install section title">
+              Three terminal lines to a working loop.
+            </Translate>
+          </h2>
         </header>
         <div className={styles.installSteps}>
           <div className={styles.installStep}>
             <span className={styles.installNum}>1</span>
             <div>
-              <h4>Register the marketplace</h4>
+              <h4>
+                <Translate id="landing.install.step1_title" description="Install step 1 title">
+                  Register the marketplace
+                </Translate>
+              </h4>
               <pre><code>{`claude
 > /plugin marketplace add https://github.com/aws-samples/sample-oh-my-aidlcops`}</code></pre>
             </div>
@@ -669,7 +1071,11 @@ export default function HomeLanding(): React.ReactElement {
           <div className={styles.installStep}>
             <span className={styles.installNum}>2</span>
             <div>
-              <h4>Install the four plugins</h4>
+              <h4>
+                <Translate id="landing.install.step2_title" description="Install step 2 title">
+                  Install the four plugins
+                </Translate>
+              </h4>
               <pre><code>{`> /plugin install ai-infra@oh-my-aidlcops
 > /plugin install agenticops@oh-my-aidlcops
 > /plugin install aidlc@oh-my-aidlcops
@@ -679,11 +1085,21 @@ export default function HomeLanding(): React.ReactElement {
           <div className={styles.installStep}>
             <span className={styles.installNum}>3</span>
             <div>
-              <h4>Run a Tier-0 workflow</h4>
+              <h4>
+                <Translate id="landing.install.step3_title" description="Install step 3 title">
+                  Run a Tier-0 workflow
+                </Translate>
+              </h4>
               <pre><code>{`> /oma:autopilot "ship the anomaly detector end to end"`}</code></pre>
               <p className={styles.installHint}>
-                Or start with a safer on-ramp:{' '}
-                <Link to={useBaseUrl('/docs/getting-started')}>getting-started guide</Link>.
+                <Translate id="landing.install.hint" description="Install hint text">
+                  Or start with a safer on-ramp:
+                </Translate>{' '}
+                <Link to={useBaseUrl('/docs/getting-started')}>
+                  <Translate id="landing.install.guide_link" description="Getting started guide link text">
+                    getting-started guide
+                  </Translate>
+                </Link>.
               </p>
             </div>
           </div>
@@ -693,32 +1109,88 @@ export default function HomeLanding(): React.ReactElement {
       {/* SECURITY */}
       <section className={styles.security}>
         <div className={styles.securityInner}>
-          <p className={styles.kicker}>Secure by default</p>
-          <h2 className={styles.sectionTitleTight}>Ship-ready, not just demo-ready.</h2>
+          <p className={styles.kicker}>
+            <Translate id="landing.security.kicker" description="Security section kicker">
+              Secure by default
+            </Translate>
+          </p>
+          <h2 className={styles.sectionTitleTight}>
+            <Translate id="landing.security.title" description="Security section title">
+              Ship-ready, not just demo-ready.
+            </Translate>
+          </h2>
           <ul className={styles.securityGrid}>
             <li>
-              <h4>MCP versions pinned</h4>
-              <p>Every .mcp.json and agent profile references awslabs MCP servers by exact PyPI version. No @latest supply-chain surprises.</p>
+              <h4>
+                <Translate id="landing.security.item1_title" description="Security item 1 title">
+                  MCP versions pinned
+                </Translate>
+              </h4>
+              <p>
+                <Translate id="landing.security.item1_body" description="Security item 1 body">
+                  Every .mcp.json and agent profile references awslabs MCP servers by exact PyPI version. No @latest supply-chain surprises.
+                </Translate>
+              </p>
             </li>
             <li>
-              <h4>Read-only EKS MCP</h4>
-              <p>The Kiro agent profile does not enable --allow-write or --allow-sensitive-data-access by default; opt in explicitly.</p>
+              <h4>
+                <Translate id="landing.security.item2_title" description="Security item 2 title">
+                  Read-only EKS MCP
+                </Translate>
+              </h4>
+              <p>
+                <Translate id="landing.security.item2_body" description="Security item 2 body">
+                  The Kiro agent profile does not enable --allow-write or --allow-sensitive-data-access by default; opt in explicitly.
+                </Translate>
+              </p>
             </li>
             <li>
-              <h4>Least-privilege IAM</h4>
-              <p>langfuse-observability uses a bucket-scoped customer-managed policy. AmazonS3FullAccess is called out as a Bad Example.</p>
+              <h4>
+                <Translate id="landing.security.item3_title" description="Security item 3 title">
+                  Least-privilege IAM
+                </Translate>
+              </h4>
+              <p>
+                <Translate id="landing.security.item3_body" description="Security item 3 body">
+                  langfuse-observability uses a bucket-scoped customer-managed policy. AmazonS3FullAccess is called out as a Bad Example.
+                </Translate>
+              </p>
             </li>
             <li>
-              <h4>Sandboxed expressions</h4>
-              <p>cost-governance evaluates budget.yaml rules with simpleeval. Python eval() on user-editable config is a documented RCE vector.</p>
+              <h4>
+                <Translate id="landing.security.item4_title" description="Security item 4 title">
+                  Sandboxed expressions
+                </Translate>
+              </h4>
+              <p>
+                <Translate id="landing.security.item4_body" description="Security item 4 body">
+                  cost-governance evaluates budget.yaml rules with simpleeval. Python eval() on user-editable config is a documented RCE vector.
+                </Translate>
+              </p>
             </li>
             <li>
-              <h4>Session state stays local</h4>
-              <p>.omao/state, .omao/plans, .omao/logs, audit-trail output, and project memory are gitignored. Verbatim prompts never leave the machine.</p>
+              <h4>
+                <Translate id="landing.security.item5_title" description="Security item 5 title">
+                  Session state stays local
+                </Translate>
+              </h4>
+              <p>
+                <Translate id="landing.security.item5_body" description="Security item 5 body">
+                  .omao/state, .omao/plans, .omao/logs, audit-trail output, and project memory are gitignored. Verbatim prompts never leave the machine.
+                </Translate>
+              </p>
             </li>
             <li>
-              <h4>Safe JSON hooks</h4>
-              <p>session-start.sh requires jq or python3 and refuses to emit shell-interpolated JSON, preventing state-file injection into context.</p>
+              <h4>
+                <Translate id="landing.security.item6_title" description="Security item 6 title">
+                  Safe JSON hooks
+                </Translate>
+              </h4>
+              <p>
+                <Translate id="landing.security.item6_body" description="Security item 6 body">
+                  session-start.sh requires jq or python3 and refuses to emit shell-interpolated JSON, preventing state-file injection into context.
+                </Translate>
+              </p>
             </li>
           </ul>
         </div>
@@ -727,21 +1199,37 @@ export default function HomeLanding(): React.ReactElement {
       {/* FAQ */}
       <section className={styles.faqSection}>
         <header className={styles.sectionHead}>
-          <p className={styles.kicker}>FAQ</p>
-          <h2 className={styles.sectionTitle}>Common questions before you install.</h2>
+          <p className={styles.kicker}>
+            <Translate id="landing.faq.kicker" description="FAQ section kicker">
+              FAQ
+            </Translate>
+          </p>
+          <h2 className={styles.sectionTitle}>
+            <Translate id="landing.faq.title" description="FAQ section title">
+              Common questions before you install.
+            </Translate>
+          </h2>
         </header>
         <Faq items={FAQ} />
       </section>
 
       {/* CTA */}
       <section className={styles.cta}>
-        <h2 className={styles.ctaTitle}>Stop running the operations loop by hand.</h2>
+        <h2 className={styles.ctaTitle}>
+          <Translate id="landing.cta.title" description="Final CTA title">
+            Stop running the operations loop by hand.
+          </Translate>
+        </h2>
         <p className={styles.ctaLede}>
-          Install once. Approve at the checkpoints. Let agents carry the rest of the AIDLC loop.
+          <Translate id="landing.cta.lede" description="Final CTA lead text">
+            Install once. Approve at the checkpoints. Let agents carry the rest of the AIDLC loop.
+          </Translate>
         </p>
         <div className={styles.heroCtaRow}>
           <Link className={styles.ctaPrimary} to={useBaseUrl('/docs/getting-started')}>
-            Read the getting-started guide
+            <Translate id="landing.cta.primary" description="Final CTA primary button">
+              Read the getting-started guide
+            </Translate>
           </Link>
           <a
             className={styles.ctaSecondary}
@@ -749,7 +1237,9 @@ export default function HomeLanding(): React.ReactElement {
             target="_blank"
             rel="noreferrer"
           >
-            Star on GitHub
+            <Translate id="landing.cta.secondary" description="Final CTA secondary button">
+              Star on GitHub
+            </Translate>
           </a>
         </div>
       </section>
