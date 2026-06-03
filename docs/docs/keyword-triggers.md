@@ -1,66 +1,66 @@
 ---
 title: Keyword Triggers
-description: 사용자 자연어 입력에서 키워드를 감지해 적절한 /oma:* 커맨드를 자동 제안하는 훅 시스템. 매핑 테이블, 동작 원리, 커스텀 트리거 추가 방법을 설명합니다.
+description: Hook system that detects keywords in user natural language input and auto-suggests appropriate /oma:* commands. Mapping tables, operation mechanics, and custom trigger addition.
 sidebar_position: 7
 ---
 
-본 문서는 OMA의 **Keyword Trigger 시스템**을 설명합니다. 이 시스템은 사용자가 `/oma:*` 커맨드를 직접 기억하지 않고도 자연어 입력으로 적절한 Tier-0 워크플로우에 진입하도록 돕습니다.
+This document explains OMA's **Keyword Trigger system**. It enables users to invoke appropriate Tier-0 workflows via natural language input without memorizing `/oma:*` commands directly.
 
-## 개요
+## Overview
 
-Keyword Trigger는 `UserPromptSubmit` 훅이 사용자 입력을 가로채서 `.omao/triggers.json`의 키워드 사전과 매칭한 뒤, 일치하는 Tier-0 커맨드를 시스템 메시지로 주입하는 구조입니다. 에이전트는 이 힌트를 받아 해당 커맨드를 호출하거나 사용자에게 확인을 요청합니다.
+Keyword Trigger works as follows: the `UserPromptSubmit` hook intercepts user input, matches it against a keyword dictionary in `.omao/triggers.json`, and injects matching Tier-0 command hints as system messages. Agents then invoke the command or ask for confirmation.
 
-## 기본 매핑 테이블
+## Default Mapping Table
 
-OMA 설치 직후 기본 트리거는 다음과 같습니다(출처: 각 플러그인의 [`<plugin>.oma.yaml`](https://github.com/aws-samples/sample-oh-my-aidlcops/tree/main/plugins) DSL `triggers` 블록, `oma compile` 이 `.omao/triggers.json` 으로 병합).
+Immediately after OMA installation, default triggers are (source: each plugin's [`<plugin>.oma.yaml`](https://github.com/aws-samples/sample-oh-my-aidlcops/tree/main/plugins) DSL `triggers` block, merged into `.omao/triggers.json` by `oma compile`):
 
-| 키워드 | 매핑 커맨드 | 예시 입력 |
+| Keyword | Maps to Command | Example Input |
 |---|---|---|
-| `autopilot` (AIDLC 문맥) | `/oma:autopilot` | "이 feature를 autopilot으로 끝까지 진행해" |
-| `agenticops`, `ops-mode` | `/oma:agenticops` | "prod를 ops-mode로 전환하라" |
-| `self-improving`, `feedback-loop` | `/oma:self-improving` | "지난주 실패를 self-improving으로 반영해" |
-| `aidlc` (단일 feature) | `/oma:aidlc-loop` | "이 요구사항을 aidlc 루프로 처리해" |
-| `eks-agentic`, `platform-bootstrap` | `/oma:platform-bootstrap` | "eks-agentic 플랫폼을 구축해" |
-| `inception` | `/oma:inception` | "inception 단계만 돌려줘" |
-| `construction` | `/oma:construction` | "construction 단계를 시작해" |
+| `autopilot` (in AIDLC context) | `/oma:autopilot` | "Run this feature through autopilot end-to-end" |
+| `agenticops`, `ops-mode` | `/oma:agenticops` | "Switch prod to ops-mode" |
+| `self-improving`, `feedback-loop` | `/oma:self-improving` | "Reflect last week's failures via self-improving" |
+| `aidlc` (single feature) | `/oma:aidlc-loop` | "Process this requirement with aidlc loop" |
+| `eks-agentic`, `platform-bootstrap` | `/oma:platform-bootstrap` | "Build eks-agentic platform" |
+| `inception` | `/oma:inception` | "Run inception phase only" |
+| `construction` | `/oma:construction` | "Start construction phase" |
 
-매핑은 **소문자 기준 부분 문자열 매칭**이며, 단어 경계를 존중합니다.
+Matching is **case-insensitive substring matching** at word boundaries.
 
-## 동작 원리
+## Mechanics
 
-### 훅 파이프라인
+### Hook Pipeline
 
 ```mermaid
 flowchart LR
-    U[사용자 입력] --> H[UserPromptSubmit 훅]
-    H --> T{triggers.json 매칭}
-    T -->|매칭| M[시스템 메시지 주입]
-    T -->|미매칭| P[원본 그대로 통과]
-    M --> C[Claude Code 컨텍스트]
+    U[User Input] --> H[UserPromptSubmit Hook]
+    H --> T{triggers.json Match}
+    T -->|match| M[Inject System Message]
+    T -->|no match| P[Pass Through]
+    M --> C[Claude Code Context]
     P --> C
-    C --> A[에이전트 처리]
-    A -->|커맨드 제안| R[응답]
+    C --> A[Agent Processing]
+    A -->|command suggestion| R[Response]
 ```
 
-### 훅 스크립트 흐름
+### Hook Script Flow
 
-`hooks/user-prompt-submit.sh`는 다음을 수행합니다.
+`hooks/user-prompt-submit.sh` performs:
 
-1. 사용자 입력을 stdin으로 수신
-2. 현재 프로젝트의 `.omao/triggers.json`을 로드 (없으면 기본값 `<repo>/steering/triggers.default.json` 사용)
-3. 입력에서 소문자 정규화된 단어 단위로 키워드 검색
-4. 매칭된 키워드가 있으면 `{"systemMessage": "Trigger match: /oma:<workflow>"}`를 stdout에 출력
-5. Claude Code가 systemMessage를 세션 컨텍스트에 주입
+1. Receive user input via stdin
+2. Load `.omao/triggers.json` from current project (or fall back to `<repo>/steering/triggers.default.json`)
+3. Search input for keywords at word boundaries with lowercase normalization
+4. If keywords match, output `{"systemMessage": "Trigger match: /oma:<workflow>"}` to stdout
+5. Claude Code injects systemMessage into session context
 
-### 세션 초기화
+### Session Initialization
 
-`hooks/session-start.sh`는 Claude Code 세션이 시작될 때 실행되어 다음을 수행합니다.
+`hooks/session-start.sh` runs when Claude Code session starts and performs:
 
-- `.omao/state/active-mode.json`에 활성 Tier-0 모드가 있는지 확인
-- 활성 모드가 있다면 "현재 `/oma:autopilot` 진행 중입니다" 등의 컨텍스트를 주입
-- `.omao/notepad.md`의 최근 메모를 세션 컨텍스트에 노출
+- Check `.omao/state/active-mode.json` for active Tier-0 mode
+- If active, inject context like "Currently running `/oma:autopilot`"
+- Expose recent memos from `.omao/notepad.md` to session context
 
-## triggers.json 구조
+## triggers.json Structure
 
 ```json
 {
@@ -86,40 +86,40 @@ flowchart LR
 }
 ```
 
-### 필드 설명
+### Field Descriptions
 
-| 필드 | 타입 | 설명 |
+| Field | Type | Description |
 |---|---|---|
-| `keywords` | `string[]` | 매칭할 키워드 목록. 공백 포함 가능 |
-| `command` | `string` | 매칭 시 제안할 `/oma:*` 커맨드 |
-| `context_hints` | `string[]` | 함께 등장해야 매칭되는 보조 키워드 (선택) |
-| `priority` | `int` | 동시 매칭 시 높은 값 우선 |
+| `keywords` | `string[]` | Keywords to match. Can include spaces |
+| `command` | `string` | `/oma:*` command to suggest on match |
+| `context_hints` | `string[]` | Auxiliary keywords that must co-occur to match (optional) |
+| `priority` | `int` | Higher values take precedence on simultaneous matches |
 
-### `context_hints`의 역할
+### Role of `context_hints`
 
-`autopilot`은 Tier-0 커맨드 이외의 문맥에서도 흔히 쓰이는 단어입니다. 이 오탐을 줄이기 위해 `context_hints: ["aidlc", "end-to-end", "full-loop"]`를 추가하면, `autopilot` 키워드는 해당 힌트와 함께 등장할 때만 매칭됩니다.
+`autopilot` is a common word outside OMA context. Adding `context_hints: ["aidlc", "end-to-end", "full-loop"]` reduces false positives: the `autopilot` keyword matches only when co-appearing with those hints.
 
-## 커스텀 트리거 추가
+## Adding Custom Triggers
 
-프로젝트 특화 워크플로우를 추가하려면 `.omao/triggers.json`에 항목을 추가합니다.
+To add project-specific workflows, add entries to `.omao/triggers.json`.
 
 ```bash
 cd <your-project>
 jq '.triggers += [
   {
-    "keywords": ["payment-check", "결제 점검"],
+    "keywords": ["payment-check", "payment check"],
     "command": "/oma:aidlc-loop",
-    "context_hints": ["payment", "결제"],
+    "context_hints": ["payment", "billing"],
     "priority": 7
   }
 ]' .omao/triggers.json > /tmp/triggers.new && mv /tmp/triggers.new .omao/triggers.json
 ```
 
-프로젝트 레벨 트리거는 기본 트리거보다 우선합니다. 같은 키워드가 프로젝트와 기본에 모두 있다면 **프로젝트 트리거가 먼저 매칭**됩니다.
+Project-level triggers take precedence. If the same keyword exists in both project and default, **project triggers match first**.
 
-### 매크로 확장 예시
+### Macro Expansion Example
 
-자주 사용하는 복합 명령을 단축 키워드로 등록할 수 있습니다.
+Register frequently-used compound commands under short keywords:
 
 ```json
 {
@@ -129,115 +129,115 @@ jq '.triggers += [
 }
 ```
 
-이후 `weekly-improve` 단어만 입력하면 에이전트가 자동으로 `/oma:self-improving`을 제안합니다.
+After this, typing `weekly-improve` triggers the agent to suggest `/oma:self-improving`.
 
-## 트리거 비활성화
+## Disabling Triggers
 
-상황에 따라 트리거 시스템 전체를 끄거나 특정 세션에서만 비활성화할 수 있습니다.
+You can disable triggers system-wide or per-session.
 
-### 환경 변수
+### Environment Variable
 
 ```bash
 export OMA_DISABLE_TRIGGERS=1
 claude
 ```
 
-`OMA_DISABLE_TRIGGERS=1`이 설정된 상태에서는 `user-prompt-submit.sh` 훅이 즉시 passthrough로 종료합니다.
+With `OMA_DISABLE_TRIGGERS=1` set, `user-prompt-submit.sh` immediately exits with passthrough, skipping trigger matching.
 
-### 영구 비활성화
+### Permanent Disabling
 
-`~/.claude/settings.json`에서 OMA 훅 항목을 삭제하면 됩니다.
+Delete the OMA hook entry from `~/.claude/settings.json`:
 
 ```bash
 jq 'del(.hooks.UserPromptSubmit[] | select(.hooks[].command | endswith("/hooks/user-prompt-submit.sh")))' \
   ~/.claude/settings.json > /tmp/settings.new && mv /tmp/settings.new ~/.claude/settings.json
 ```
 
-단, 이 경우 `SessionStart` 훅까지 끄려면 동일 패턴으로 별도 처리해야 합니다.
+To also disable `SessionStart` hook, apply the same pattern separately.
 
-### 단일 입력 우회
+### Single Input Bypass
 
-입력 앞에 `#noauto`를 붙이면 해당 프롬프트에 한해 트리거 매칭을 건너뜁니다.
+Prepend `#noauto` to skip trigger matching for that prompt:
 
 ```
-#noauto autopilot 모드에 대한 일반 질문이 있어요
+#noauto General question about autopilot mode
 ```
 
-훅은 `#noauto` 프리픽스를 감지하면 즉시 passthrough하고, 프리픽스는 최종 입력에서 제거됩니다.
+The hook detects `#noauto`, passes through, and strips the prefix from final input.
 
-## 매칭 규칙 상세
+## Matching Rules Details
 
-### 정규화
-- 입력 텍스트를 소문자로 변환
-- 전후 공백 및 중복 공백 제거
-- 한국어·영어 혼합 처리 시 원문도 동시에 유지
+### Normalization
+- Convert input text to lowercase
+- Trim leading/trailing and collapse internal whitespace
+- Preserve both Korean and English text for hybrid matching
 
-### 단어 경계
-- 공백 없이 긴 문자열 내 매칭은 하지 않음 (예: `automobile`에서 `auto`가 매칭되지 않음)
-- 한국어는 조사 어간 분리를 수행하지 않으므로, 정확한 형태로 키워드 등록 필요 (예: "자동조종", "자율 모드")
+### Word Boundaries
+- No substring matching across word breaks (e.g., `auto` does not match within `automobile`)
+- Korean lacks word tokenization, so register keywords in exact form (e.g., "자동조종", "자율 모드")
 
-### 복수 매칭
-동시에 여러 트리거가 매칭되면 `priority`가 가장 높은 것을 선택합니다. 동일 priority 내에서는 `triggers.json` 배열 순서가 우선합니다.
+### Multiple Matches
+When several triggers match simultaneously, the highest `priority` wins. Within same priority, array order in `triggers.json` is tiebreaker.
 
-### 대소문자
-매칭은 대소문자 무시지만, 시스템 메시지에 주입되는 커맨드 문자열은 `triggers.json`에 등록된 그대로 출력됩니다.
+### Case Sensitivity
+Matching is case-insensitive. The command string in systemMessage is verbatim from `triggers.json`.
 
-## 디버깅
+## Debugging
 
-### 매칭 결과 확인
+### Check Matching Behavior
 
-훅 스크립트를 수동 실행해 매칭 동작을 검증합니다.
+Manually run the hook script to verify matching:
 
 ```bash
-echo "autopilot으로 AIDLC를 돌려줘" | bash ~/.oma/hooks/user-prompt-submit.sh
-# 기대 출력: {"systemMessage":"Trigger match: /oma:autopilot"}
+echo "Run AIDLC with autopilot" | bash ~/.oma/hooks/user-prompt-submit.sh
+# Expected output: {"systemMessage":"Trigger match: /oma:autopilot"}
 ```
 
-### 트리거 목록 점검
+### Inspect Trigger List
 
 ```bash
 jq '.triggers[] | {keywords, command, priority}' .omao/triggers.json
 ```
 
-### 로그 수집
+### Collect Logs
 
-훅 내부 디버그 출력을 활성화하려면:
+Enable debug output in hooks:
 
 ```bash
 export OMA_TRIGGER_DEBUG=1
 claude
-# 훅 호출 시 ~/.claude/logs/oma-triggers.log 에 매칭 결과 기록
+# Hook calls log matching results to ~/.claude/logs/oma-triggers.log
 ```
 
-## 베스트 프랙티스
+## Best Practices
 
-### 고빈도 워크플로우에 짧은 키워드 할당
-`/oma:self-improving`을 매주 호출한다면 `"weekly-improve"`처럼 기억하기 쉬운 키워드를 별도로 등록합니다.
+### Assign Short Keywords to High-Frequency Workflows
+If `/oma:self-improving` is called weekly, register `"weekly-improve"` as a memorable shorthand.
 
-### 민감한 커맨드는 `context_hints` 사용
-`/oma:platform-bootstrap`은 장시간·비용 영향이 큰 작업입니다. `"eks-agentic"` 단독보다 `context_hints: ["platform", "bootstrap", "eks"]`를 요구하도록 구성해 오탐을 방지합니다.
+### Use `context_hints` for High-Impact Commands
+`/oma:platform-bootstrap` is long-running and costly. Require `context_hints: ["platform", "bootstrap", "eks"]` to prevent accidental invocation.
 
-### 팀 표준 triggers.json 버전 관리
-프로젝트 `.omao/triggers.json`을 git에 포함시키면 팀 전체가 동일한 단축 명령을 공유합니다. 개인 특화 트리거는 `.gitignore`에 `.omao/triggers.local.json`을 추가해 분리합니다.
+### Version-Control Team triggers.json
+Commit `.omao/triggers.json` to git so the team shares consistent shortcuts. Isolate personal triggers via `.gitignore` of `.omao/triggers.local.json`.
 
-### 한국어·영어 혼용 고려
-한국어 중심 팀이라면 `["자동조종", "autopilot"]`처럼 양 언어를 함께 등록합니다. `OMA_TRIGGER_DEBUG=1`로 실제 어느 키워드가 매칭되는지 모니터링하는 것이 좋습니다.
+### Accommodate Mixed Languages
+For Korean-dominant teams, register both: `["자동조종", "autopilot"]`. Monitor with `OMA_TRIGGER_DEBUG=1` to see which keyword actually matches.
 
-## 보안·감사 고려사항
+## Security and Audit
 
-- 트리거는 커맨드를 **제안**할 뿐 자동 실행하지 않습니다. 실행은 에이전트가 사용자에게 확인하는 방식으로 진행됩니다(정확한 UX는 Claude Code 버전에 따라 다름).
-- `.omao/triggers.json`은 프로젝트 소스로 관리되므로, 악의적인 커맨드 주입을 방지하려면 코드 리뷰 대상에 포함해야 합니다.
-- `OMA_DISABLE_TRIGGERS=1`을 CI 환경에서 기본 활성화하면, 자동화 파이프라인이 의도치 않은 커맨드를 실행하지 않도록 할 수 있습니다.
+- Triggers **suggest** commands but do not auto-execute. Agents ask for confirmation (UX varies by Claude Code version).
+- `.omao/triggers.json` is managed as project source, so include it in code review to prevent malicious command injection.
+- Setting `OMA_DISABLE_TRIGGERS=1` in CI prevents automation pipelines from accidentally invoking commands.
 
-## 참고 자료
+## Reference Materials
 
-### 공식 문서
-- [Claude Code Hooks](https://docs.anthropic.com/claude/docs/claude-code-hooks) — UserPromptSubmit·SessionStart 훅 표준
-- [jq Manual](https://jqlang.github.io/jq/manual/) — triggers.json 편집
-- [oh-my-claudecode Keyword Triggers](https://github.com/Yeachan-Heo/oh-my-claudecode) — 참조 구현 (OMC)
+### Official Documentation
+- [Claude Code Hooks](https://docs.anthropic.com/claude/docs/claude-code-hooks) — UserPromptSubmit and SessionStart hook standards
+- [jq Manual](https://jqlang.github.io/jq/manual/) — Editing triggers.json
+- [oh-my-claudecode Keyword Triggers](https://github.com/Yeachan-Heo/oh-my-claudecode) — Reference implementation (OMC)
 
-### OMA 내부 문서
-- [Tier-0 Workflows](./tier-0-workflows.md) — 트리거가 매핑하는 커맨드의 상세
-- [Claude Code Setup](./claude-code-setup.md) — 훅 등록 절차
-- [Kiro Setup](./kiro-setup.md) — Kiro에서의 등가 메커니즘 (kiro.meta.yaml trigger_keywords)
-- [Introduction](./intro.md) — 전체 시스템 개요
+### OMA Internal Documentation
+- [Tier-0 Workflows](./tier-0-workflows.md) — Command details that triggers map to
+- [Claude Code Setup](./claude-code-setup.md) — Hook registration procedure
+- [Kiro Setup](./kiro-setup.md) — Kiro equivalent mechanism (kiro.meta.yaml trigger_keywords)
+- [Introduction](./intro.md) — System overview

@@ -1,38 +1,38 @@
 ---
 title: Kiro Setup
-description: Kiro 에이전트 하네스에 OMA를 설치하는 경로. install/kiro.sh의 심링크 구조, kiro.meta.yaml 사이드카, Claude Code와의 상태 공유 방식을 다룹니다.
+description: Installation path for OMA in the Kiro agent harness. Covers install/kiro.sh symlink structure, kiro.meta.yaml sidecar, and state sharing with Claude Code.
 sidebar_position: 5
 ---
 
-본 문서는 Kiro 하네스에서 `oh-my-aidlcops`(OMA)를 설치·구성하는 방법을 설명합니다. OMA는 Claude Code와 Kiro를 동일한 스킬·상태 기반으로 지원하며, 두 하네스는 프로젝트 루트의 `.omao/` 디렉터리를 공유합니다.
+This document explains how to install and configure `oh-my-aidlcops` (OMA) in the Kiro harness. OMA supports both Claude Code and Kiro with identical skill and state foundations; both harnesses share the `.omao/` directory at the project root.
 
-## Kiro 하네스란
+## Kiro Harness
 
-Kiro는 Claude Code와 다른 **skills-first 에이전트 하네스**입니다. 주요 차이점은 다음과 같습니다.
+Kiro is a **skills-first agent harness** distinct from Claude Code. Key differences:
 
-| 측면 | Claude Code | Kiro |
+| Aspect | Claude Code | Kiro |
 |---|---|---|
-| 플러그인 단위 | `plugin/` 디렉터리 | 스킬 단위 flat 배포 |
-| 스킬 위치 | `~/.claude/plugins/<plugin>/skills/<skill>/` | `~/.kiro/skills/<plugin>/<skill>/` |
-| 커맨드 시스템 | `/slash-command` | 스킬 직접 호출 |
-| Steering | Claude Code가 자동 주입 | `.kiro/steering/` 디렉터리 기반 |
-| 트리거 힌트 | `settings.json` 훅 | `kiro.meta.yaml` 사이드카 |
+| Plugin unit | `plugin/` directory | Flat skill-level deployment |
+| Skill location | `~/.claude/plugins/<plugin>/skills/<skill>/` | `~/.kiro/skills/<plugin>/<skill>/` |
+| Command system | `/slash-command` | Direct skill invocation |
+| Steering | Auto-injected by Claude Code | `.kiro/steering/` directory-based |
+| Trigger hints | `settings.json` hooks | `kiro.meta.yaml` sidecar |
 
-OMA는 이 차이를 `install/kiro.sh`에서 흡수하며, 동일한 `plugins/<plugin>/skills/<skill>/SKILL.md` 소스를 두 하네스에 공유 노출합니다.
+OMA absorbs these differences in `install/kiro.sh`, sharing the identical `plugins/<plugin>/skills/<skill>/SKILL.md` source across both harnesses.
 
-## 사전 요구사항
+## Prerequisites
 
-| 도구 | 버전 | 설치 |
+| Tool | Version | Installation |
 |---|---|---|
-| Kiro 런타임 | 최신 stable | [Kiro 공식 가이드](https://kiro.dev) |
+| Kiro runtime | latest stable | [Kiro Official Guide](https://kiro.dev) |
 | bash | 4+ | `brew install bash` (macOS) |
 | jq | 1.6+ | `brew install jq` / `apt install jq` |
-| git | 2.30+ | 시스템 기본값 |
-| uv / uvx | latest | `pipx install uv` (MCP 서버용) |
+| git | 2.30+ | System defaults acceptable |
+| uv / uvx | latest | `pipx install uv` (required for MCP servers) |
 
-## 설치
+## Installation
 
-Kiro는 네이티브 마켓플레이스 경로를 제공하지 않으므로 수동 설치만 지원합니다.
+Kiro does not provide a native marketplace path, so manual installation is the only option.
 
 ```bash
 git clone https://github.com/aws-samples/sample-oh-my-aidlcops
@@ -40,7 +40,7 @@ cd oh-my-aidlcops
 bash scripts/install/kiro.sh
 ```
 
-스크립트 실행 후 기대되는 출력은 다음과 같습니다.
+Expected output after script execution:
 
 ```
 [install-kiro] OMA repo : /.../oh-my-aidlcops
@@ -56,9 +56,9 @@ Installation complete.
     kiro.meta.yaml found  : 7
 ```
 
-## 심링크 구조
+## Symlink Structure
 
-설치가 끝나면 Kiro 홈 디렉터리에 다음 구조가 생성됩니다.
+After installation, the Kiro home directory has the following structure:
 
 ```
 ~/.kiro/
@@ -77,34 +77,34 @@ Installation complete.
 │   ├── aidlc/
 │   └── aidlc/
 ├── steering                             -> <repo>/steering
-├── guides/                              # NEW: 단계별 가이드 (플러그인별 디렉터리)
+├── guides/                              # NEW: stage-by-stage safety guides (per-plugin directory)
 │   └── ai-infra/                -> <repo>/plugins/ai-infra/guides
-├── agents/                              # NEW: Kiro 에이전트 설정
+├── agents/                              # NEW: Kiro agent profiles
 │   └── ai-infra.agent.json      -> <repo>/plugins/ai-infra/kiro-agents/ai-infra.agent.json
-└── settings/                            # NEW: CLI 설정
-    └── cli.json                         # 기본 템플릿 (사용자 편집 가능)
+└── settings/                            # NEW: CLI settings
+    └── cli.json                         # Default template (user-editable)
 ```
 
-각 심링크는 OMA 리포지터리의 원본 디렉터리를 가리킵니다. 따라서 `git pull`로 리포지터리를 업데이트하면 Kiro가 즉시 최신 스킬을 사용합니다.
+Each symlink points to the original directory in the OMA repository. Thus, updating the repository with `git pull` immediately makes latest skills available to Kiro.
 
-### idempotency
+### Idempotency
 
-`install/kiro.sh`는 idempotent입니다. 재실행 시 기존 심링크의 타겟이 올바르면 유지하고, 오염된 링크만 새로 생성합니다. 실제 파일이 심링크 자리에 있으면 **덮어쓰지 않고 경고만 출력**합니다.
+`install/kiro.sh` is idempotent. Re-running preserves existing symlinks if their targets are correct and creates only corrupted links. If an actual file occupies a symlink location, **the script warns and does not overwrite**.
 
 ```
 [install-kiro][warn] refusing to replace non-symlink: /home/user/.kiro/skills/my-skill
 ```
 
-## kiro.meta.yaml 사이드카
+## kiro.meta.yaml Sidecar
 
-Claude Code의 `SKILL.md` frontmatter는 Kiro가 그대로 해석하지 못하는 필드를 일부 포함합니다. 일부 스킬은 Kiro 전용 메타데이터를 `kiro.meta.yaml` 사이드카 파일로 제공하며, 설치 스크립트는 이를 감지하면 로그를 출력합니다.
+Some Claude Code SKILL.md frontmatter fields are not directly interpreted by Kiro. Some skills provide Kiro-specific metadata as a `kiro.meta.yaml` sidecar file; the install script detects and logs this.
 
 ```
 [install-kiro] skill linked: ai-infra/vllm-serving-setup
 [install-kiro]   kiro.meta.yaml sidecar detected for ai-infra/vllm-serving-setup
 ```
 
-사이드카 파일 예시 구조:
+Example sidecar structure:
 
 ```yaml
 # kiro.meta.yaml
@@ -123,64 +123,64 @@ kiro:
   approval_required: true
 ```
 
-Kiro는 이 메타데이터를 읽어 다음을 수행합니다.
+Kiro reads this metadata to perform:
 
-- **trigger_keywords** — 자연어 요청에서 매칭 시 스킬을 우선 제안
-- **context_files** — 스킬 실행 시 함께 로드할 추가 파일
-- **mcp_required** — 실행 전 필수 MCP 서버 연결 확인
-- **phase** — Inception / Construction / Operations 단계 분류
-- **approval_required** — 체크포인트 승인 필요 여부
+- **trigger_keywords** — Prioritize skill suggestion on natural language match
+- **context_files** — Load additional files alongside skill execution
+- **mcp_required** — Verify required MCP server connections before execution
+- **phase** — Classify as Inception / Construction / Operations stage
+- **approval_required** — Whether checkpoint approval is required
 
-사이드카가 없는 스킬은 `SKILL.md` frontmatter만으로 동작합니다.
+Skills without sidecars operate normally using only SKILL.md frontmatter.
 
 ## Full Kiro Layout Support
 
-OMA는 AWS Kiro 모더나이제이션 샘플에서 사용하는 전체 디렉터리 레이아웃을 지원합니다. 설치 스크립트는 다음 5개 디렉터리를 자동으로 구성합니다.
+OMA supports the complete directory layout used in AWS Kiro modernization samples. The install script automatically configures these 5 directories:
 
-### 1. skills/ — 실행 가능한 스킬
+### 1. skills/ — Executable Skills
 
-모든 플러그인의 `skills/` 하위 디렉터리를 `~/.kiro/skills/<plugin>/<skill>/` 형태로 심링크합니다. 각 스킬은 `SKILL.md` + 선택적 `kiro.meta.yaml` 사이드카로 구성됩니다.
+Symlinks all plugin `skills/` subdirectories to `~/.kiro/skills/<plugin>/<skill>/` form. Each skill comprises `SKILL.md` and optional `kiro.meta.yaml` sidecar.
 
-### 2. steering/ — 전역 오리엔테이션
+### 2. steering/ — Global Orientation
 
-`steering/` 디렉터리를 `~/.kiro/steering/`에 심링크합니다.
+Symlinks the `steering/` directory to `~/.kiro/steering/`.
 
 ```
 steering/
-├── oma-hub.md              # OMA 전역 오리엔테이션
+├── oma-hub.md              # OMA global orientation
 ├── commands/
-│   └── oma/                # /oma:* 슬래시 커맨드 정의 (Claude Code용)
-└── workflows/              # 5-checkpoint 워크플로우 템플릿
+│   └── oma/                # /oma:* slash command definitions (Claude Code-specific)
+└── workflows/              # 5-checkpoint workflow templates
 ```
 
-Kiro는 `commands/oma/`를 슬래시 커맨드로 해석하지 않지만, 파일 내용을 스킬 orchestration 참고 자료로 활용합니다. `workflows/` 디렉터리의 5-체크포인트 템플릿은 두 하네스에서 동일하게 동작합니다.
+Kiro does not interpret `commands/oma/` as slash commands but uses file content as skill orchestration reference material. The 5-checkpoint templates in `workflows/` operate identically across both harnesses.
 
-### 3. guides/ — 단계별 안전 가이드 (Stage-Gated)
+### 3. guides/ — Stage-by-Stage Safety Guides
 
-플러그인의 `guides/` 디렉터리를 `~/.kiro/guides/<plugin>/` 형태로 심링크합니다. guides는 워크플로우 단계별로 로드되는 안전 기준 문서(safety-critical content)입니다.
+Symlinks plugin `guides/` directories to `~/.kiro/guides/<plugin>/` form. Guides are stage-gated, safety-critical content loaded per workflow stage.
 
 ```
 ~/.kiro/guides/
 └── ai-infra/       -> <repo>/plugins/ai-infra/guides
-    ├── aws-practices/      # AWS Well-Architected 기반 가이드
-    ├── common/             # 공통 안전 기준
-    └── stages/             # 단계별 체크포인트 가이드
+    ├── aws-practices/      # AWS Well-Architected-based guides
+    ├── common/             # Common safety baselines
+    └── stages/             # Stage-by-stage checkpoint guides
         ├── stage-1-analysis.md
         ├── stage-2-requirements.md
         └── ...
 ```
 
-Kiro는 워크플로우 컨텍스트에 따라 해당 단계의 가이드를 자동으로 로드합니다. 예를 들어 `stage-2-requirements` 단계에서는 `stages/stage-2-requirements.md`가 context로 주입됩니다.
+Kiro automatically loads the guide for the current workflow stage into context. For example, during the `stage-2-requirements` phase, `stages/stage-2-requirements.md` is injected as context.
 
-### 4. agents/ — Kiro 에이전트 프로필
+### 4. agents/ — Kiro Agent Profiles
 
-플러그인의 `kiro-agents/*.json` 파일을 `~/.kiro/agents/` 디렉터리로 심링크합니다. 각 에이전트 프로필은 다음을 정의합니다.
+Symlinks plugin `kiro-agents/*.json` files to `~/.kiro/agents/` directory. Each agent profile defines:
 
-- **MCP 서버 구성(MCP Server Configuration)** — 필요한 MCP 서버 목록과 환경 변수
-- **자동 승인 규칙(Auto-approval Rules)** — 읽기 전용 / 파일 쓰기 / bash 명령 승인 정책
-- **리소스 로딩(Resource Loading)** — 에이전트 시작 시 로드할 steering 파일 및 스킬 경로
+- **MCP Server Configuration** — List of required MCP servers and environment variables
+- **Auto-approval Rules** — Read-only / file write / bash command approval policies
+- **Resource Loading** — Steering files and skill paths to load on agent startup
 
-예시: `ai-infra.agent.json`
+Example: `ai-infra.agent.json`
 
 ```json
 {
@@ -196,11 +196,11 @@ Kiro는 워크플로우 컨텍스트에 따라 해당 단계의 가이드를 자
 }
 ```
 
-Kiro 런타임에서 `@ai-infra` 형태로 해당 프로필을 활성화할 수 있습니다.
+In Kiro runtime, activate the profile in the form `@ai-infra`.
 
-### 5. settings/ — CLI 기본 설정
+### 5. settings/ — CLI Default Configuration
 
-`scripts/kiro-cli.template.json` 템플릿을 `~/.kiro/settings/cli.json`으로 복사합니다 (기존 파일이 없는 경우에만). 이 파일은 Kiro CLI의 기본 동작을 정의합니다.
+Copies `scripts/kiro-cli.template.json` template to `~/.kiro/settings/cli.json` (only if no existing file). This file defines default Kiro CLI behavior.
 
 ```json
 {
@@ -216,78 +216,78 @@ Kiro 런타임에서 `@ai-infra` 형태로 해당 프로필을 활성화할 수 
 }
 ```
 
-설치 후 사용자가 직접 편집해 기본 모델, 자동 승인 정책, 항상 로드할 steering 파일을 조정할 수 있습니다.
+After installation, users can directly edit this file to adjust default model, auto-approval policy, and steering files to always load.
 
-## 프로젝트 초기화
+## Project Initialization
 
-Claude Code 와 동일하게 작업 프로젝트에서 `.omao/` 를 초기화합니다. **`oma setup` 을 실행했다면 이미 완료된 상태** 이므로 수동 호출은 필요 없습니다.
+Initialize `.omao/` in your project directory, the same as Claude Code. **If you ran `oma setup`, this is already done** — no manual call needed.
 
-`oma setup` 없이 수동 초기화:
+To initialize manually without the full setup wizard:
 
 ```bash
 cd <your-project>
 oma init
 ```
 
-`.omao/`는 harness-agnostic 이므로 같은 프로젝트에서 Claude Code와 Kiro를 병행 사용해도 상태가 동기화됩니다. 예를 들어 Kiro에서 시작한 AIDLC 루프를 Claude Code에서 이어받아 체크포인트 승인을 처리할 수 있습니다.
+Since `.omao/` is harness-agnostic, state stays synchronized even if you use Claude Code and Kiro in parallel on the same project. For example, you can start an AIDLC loop in Kiro and continue it in Claude Code for checkpoint approvals.
 
-## AIDLC 확장 적용 (opt-in)
+## AIDLC Extensions (opt-in)
 
-Kiro에서도 awslabs/aidlc-workflows 확장을 적용할 수 있습니다.
+Kiro also supports awslabs/aidlc-workflows extensions.
 
 ```bash
 bash scripts/install/aidlc-extensions.sh
 ```
 
-스크립트는 `awslabs/aidlc-workflows`를 `~/.aidlc`에 clone하고 OMA의 `*.opt-in.md` 확장을 심링크합니다. Kiro는 `~/.aidlc`를 스킬 컨텍스트로 자동 로드하지는 않으므로, 스킬 호출 시 명시적으로 참조하거나 프로젝트의 `.omao/plans/` 디렉터리에 복사해야 합니다.
+The script clones `awslabs/aidlc-workflows` to `~/.aidlc` and symlinks OMA's `*.opt-in.md` extensions. Kiro does not auto-load `~/.aidlc` as skill context, so you must either reference it explicitly during skill invocation or copy it to your project's `.omao/plans/` directory.
 
-## 환경 변수
+## Environment Variables
 
-| 변수 | 기본값 | 설명 |
+| Variable | Default | Description |
 |---|---|---|
-| `OMA_OWNER` | `aws-samples` | GitHub 소유자 |
-| `KIRO_HOME` | `$HOME/.kiro` | Kiro 설치 디렉터리 |
+| `OMA_OWNER` | `aws-samples` | GitHub owner |
+| `KIRO_HOME` | `$HOME/.kiro` | Kiro installation directory |
 
-CI 환경이나 다중 사용자 장비에서 `KIRO_HOME`을 재지정해 격리된 설치를 만들 수 있습니다.
+You can reassign `KIRO_HOME` in CI environments or on multi-user machines to create isolated installations.
 
 ```bash
 KIRO_HOME=/opt/kiro-ci bash scripts/install/kiro.sh
 ```
 
-## 설치 검증
+## Installation Verification
 
 ```bash
-# 1. 스킬 디렉터리 확인
+# 1. Check skill directory
 ls ~/.kiro/skills/
-# ai-infra/  agenticops/  aidlc/  modernization/
+# ai-infra/  agenticops/  aidlc/  aidlc/
 
-# 2. 각 플러그인 스킬 개수
+# 2. Skill count per plugin
 for p in ai-infra agenticops aidlc; do
     echo "$p: $(ls ~/.kiro/skills/$p/ 2>/dev/null | wc -l) skills"
 done
 
-# 3. Steering 심링크 확인
+# 3. Verify steering symlink
 ls -la ~/.kiro/steering
-# symbolic link to <repo>/steering 이어야 합니다.
+# Should be a symbolic link to <repo>/steering
 ```
 
-Kiro 런타임에서 스킬을 호출해 정상 동작을 확인합니다.
+Invoke a skill in Kiro runtime to verify normal operation.
 
 ```
-> agenticops/self-improving-loop 트레이스를 분석해 개선 PR을 작성하라
+> agenticops/self-improving-loop analyze traces and write improvement PR
 ```
 
-## 트러블슈팅
+## Troubleshooting
 
-### 스킬이 Kiro에 표시되지 않음
+### Skills not showing in Kiro
 
-`~/.kiro/skills/` 하위에 심링크가 생성되었는지 확인합니다.
+Check whether symlinks were created under `~/.kiro/skills/`.
 
 ```bash
 find ~/.kiro/skills/ -maxdepth 2 -type l | head
 ```
 
-심링크가 깨졌다면 재설치합니다.
+If symlinks are broken, reinstall.
 
 ```bash
 rm -rf ~/.kiro/skills/ai-infra ~/.kiro/skills/agenticops \
@@ -295,78 +295,78 @@ rm -rf ~/.kiro/skills/ai-infra ~/.kiro/skills/agenticops \
 bash ~/.oma/scripts/install/kiro.sh
 ```
 
-### `refusing to replace non-symlink` 경고
+### `refusing to replace non-symlink` warning
 
-기존에 Kiro 스킬 디렉터리에 실제 파일이 존재하는 경우입니다. 해당 파일을 백업·제거 후 재설치합니다.
+This occurs when actual files exist in the Kiro skill directory. Back up and remove the conflicting file, then reinstall.
 
 ```bash
 mv ~/.kiro/skills/<conflicting-skill> ~/.kiro/skills/<conflicting-skill>.bak
 bash ~/.oma/scripts/install/kiro.sh
 ```
 
-### kiro.meta.yaml이 반영되지 않음
+### kiro.meta.yaml not taking effect
 
-Kiro 버전에 따라 사이드카 필드 지원이 다릅니다. 다음을 확인합니다.
+Sidecar field support varies by Kiro version. Check the following:
 
 ```bash
-# 사이드카 파일 존재 확인
+# Verify sidecar file existence
 find ~/.kiro/skills/ -name 'kiro.meta.yaml' | head
 
-# Kiro 런타임 로그에서 사이드카 로드 확인 (Kiro 문서 참조)
+# Check sidecar load in Kiro runtime logs (see Kiro documentation)
 ```
 
-지원되지 않는 필드는 무시되며, 스킬 기본 동작에는 영향이 없습니다.
+Unsupported fields are ignored and do not affect basic skill operation.
 
-### Claude Code와 Kiro 간 상태 불일치
+### State mismatch between Claude Code and Kiro
 
-두 하네스가 같은 `.omao/`를 공유하므로 원칙적으로 동기화됩니다. 불일치가 발생하면 파일 시스템 동기화 문제(예: NFS, 네트워크 드라이브)일 가능성이 높습니다.
+Both harnesses share the same `.omao/`, so they should stay synchronized by design. If mismatch occurs, suspect file system sync issues (NFS, network drives).
 
 ```bash
-# 파일 시스템이 로컬인지 확인
+# Verify the file system is local
 df -T .omao/
-# 네트워크 드라이브라면 로컬 디스크로 이동 권장
+# If it is a network drive, migration to local disk is recommended
 ```
 
-### MCP 서버 연결 실패
+### MCP server connection fails
 
-Kiro 런타임이 `uvx` 경로를 찾지 못하는 경우가 있습니다. Kiro 설정에서 `PATH`에 uv 설치 경로(`~/.local/bin` 또는 `~/.cargo/bin`)를 추가합니다.
+Kiro runtime may not find the `uvx` path. Add the uv installation path (`~/.local/bin` or `~/.cargo/bin`) to `PATH` in Kiro settings.
 
-## Kiro 전용 고려사항
+## Kiro-Specific Considerations
 
-### 트리거 키워드 기반 호출
+### Trigger Keyword-Based Invocation
 
-Kiro는 `kiro.meta.yaml`의 `trigger_keywords`를 기반으로 자연어 입력을 스킬에 자동 매칭합니다. Claude Code의 [Keyword Triggers](./keyword-triggers.md) 훅 기반 구조와 유사하지만, Kiro 내부 엔진이 처리합니다.
+Kiro auto-matches natural language input to skills based on `trigger_keywords` in `kiro.meta.yaml`. This is similar to Claude Code's [Keyword Triggers](./keyword-triggers.md) hook-based structure but handled by Kiro's internal engine.
 
-### 체크포인트 승인 UX
+### Checkpoint Approval UX
 
-Kiro는 체크포인트를 대화창 내 인라인 프롬프트로 표시합니다. 승인·거부는 `approve` / `reject` / `revise <comment>` 중 하나를 입력합니다. Claude Code와 입력 형식이 같으므로 학습 비용이 거의 없습니다.
+Kiro displays checkpoints as inline prompts in the conversation. Approve/reject/revise by entering `approve` / `reject` / `revise <comment>`. Input format is identical to Claude Code, so learning cost is minimal.
 
-### 로그 수집
+### Log Collection
 
-Kiro는 실행 로그를 `~/.kiro/logs/`에 저장합니다. OMA는 이 로그를 별도로 수집하지 않지만, 문제 신고 시 해당 디렉터리를 첨부해야 재현이 가능합니다.
+Kiro stores execution logs in `~/.kiro/logs/`. OMA does not separately collect these logs, but attaching that directory with bug reports enables reproducibility.
 
-## 제거
+## Removal
 
 ```bash
-# 스킬 심링크 제거
+# Remove skill symlinks
 rm -rf ~/.kiro/skills/ai-infra ~/.kiro/skills/agenticops \
        ~/.kiro/skills/aidlc/inception ~/.kiro/skills/aidlc/construction
 
-# Steering 심링크 제거
+# Remove steering symlink
 rm ~/.kiro/steering
 
-# (선택) 프로젝트 상태 제거
+# (Optional) Remove project state
 rm -rf <your-project>/.omao/
 ```
 
-## 참고 자료
+## Reference Materials
 
-### 공식 문서
-- [Kiro 공식 가이드](https://kiro.dev) — Kiro 런타임 설치와 설정
-- [awslabs/mcp](https://github.com/awslabs/mcp) — Kiro에서 사용하는 MCP 서버 목록
+### Official Documentation
+- [Kiro Official Guide](https://kiro.dev) — Kiro runtime installation and configuration
+- [awslabs/mcp](https://github.com/awslabs/mcp) — List of MCP servers for Kiro
 
-### OMA 내부 문서
-- [Introduction](./intro.md) — OMA 개요
-- [Getting Started](./getting-started.md) — 5분 Quickstart (Claude Code 기준, 흐름 동일)
-- [Claude Code Setup](./claude-code-setup.md) — 자매 하네스 설치
-- [Tier-0 Workflows](./tier-0-workflows.md) — 설치 후 실행할 워크플로우
+### OMA Internal Documentation
+- [Introduction](./intro.md) — OMA overview
+- [Getting Started](./getting-started.md) — 5-minute Quickstart (Claude Code-based; flow is identical)
+- [Claude Code Setup](./claude-code-setup.md) — Sister harness installation
+- [Tier-0 Workflows](./tier-0-workflows.md) — Workflows to invoke after installation
