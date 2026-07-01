@@ -117,12 +117,12 @@
           "properties": {
             "produces": {
               "type": "array",
-              "items": { "$ref": "../ontology/agent.schema.json#/definitions/entityRef" },
+              "items": { "$ref": "../common/enums.schema.json#/$defs/entityRef" },
               "uniqueItems": true
             },
             "consumes": {
               "type": "array",
-              "items": { "$ref": "../ontology/agent.schema.json#/definitions/entityRef" },
+              "items": { "$ref": "../common/enums.schema.json#/$defs/entityRef" },
               "uniqueItems": true
             }
           }
@@ -296,7 +296,7 @@
         },
         "phase": {
           "type": "array",
-          "items": { "enum": ["inception", "construction", "operations"] },
+          "items": { "$ref": "../common/enums.schema.json#/$defs/aidlcPhase" },
           "minItems": 1,
           "uniqueItems": true
         },

@@ -39,6 +39,7 @@ from jsonschema import Draft7Validator, RefResolver
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DSL_SCHEMA_PATH = REPO_ROOT / "schemas" / "harness" / "dsl.schema.json"
 ONTOLOGY_SCHEMA_DIR = REPO_ROOT / "schemas" / "ontology"
+COMMON_SCHEMA_DIR = REPO_ROOT / "schemas" / "common"
 TRIGGERS_OUT = REPO_ROOT / ".omao" / "triggers.json"
 
 
@@ -50,6 +51,11 @@ def _build_ref_store() -> dict:
             content = json.loads(schema_path.read_text(encoding="utf-8"))
             store[content["$id"]] = content
             store[f"../ontology/{schema_path.name}"] = content
+    if COMMON_SCHEMA_DIR.exists():
+        for schema_path in COMMON_SCHEMA_DIR.glob("*.schema.json"):
+            content = json.loads(schema_path.read_text(encoding="utf-8"))
+            store[content["$id"]] = content
+            store[f"../common/{schema_path.name}"] = content
     if DSL_SCHEMA_PATH.exists():
         dsl_content = json.loads(DSL_SCHEMA_PATH.read_text(encoding="utf-8"))
         store[dsl_content["$id"]] = dsl_content
